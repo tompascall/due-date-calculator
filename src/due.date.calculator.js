@@ -10,6 +10,7 @@ var calc = {
 calc.Turnaround = function(workingHours){
   this.days = Math.floor(workingHours / (calc.endWorkingHours - calc.startWorkingHours));
   this.remainderHours = workingHours % (calc.endWorkingHours - calc.startWorkingHours);
+  this.minutes = workingHours * 60;
 };
 
 calc.SubmitDate = function(date){
