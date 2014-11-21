@@ -2,3 +2,10 @@
 
 'use strict';
 
+var calc = {};
+
+calc.Turnaround = function(){
+
+};
+
+module.exports = calc;
