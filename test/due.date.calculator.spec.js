@@ -42,6 +42,11 @@ describe('Submit Date', function(){
     date.setHours(14);
     submitDate = new calc.SubmitDate(date);
     expect(submitDate.hours).to.equal(14);
+  });
 
+  it('should get minutes of submit date', function(){
+    date.setMinutes(30);
+    submitDate = new calc.SubmitDate(date);
+    expect(submitDate.minutes).to.equal(30);
   });
 });
