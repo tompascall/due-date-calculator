@@ -6,21 +6,23 @@ var expect = require('expect.js');
 var calc = require('../src/due.date.calculator.js');
 
 describe('Turnaround Time', function(){
-  it('should create object', function(){
-    var turnaround = new calc.Turnaround();
+  var turnaround;
+
+  it('should create a turnaround object', function(){
+    turnaround = new calc.Turnaround();
     expect(turnaround).to.be.an('object');
   });
 
   it('should calculate days and remainder hours of turnaround time', function(){
     var workingHours = 19;
-    var turnaround = new calc.Turnaround(workingHours);
+    turnaround = new calc.Turnaround(workingHours);
     expect(turnaround.days).to.equal(2);
     expect(turnaround.remainderHours).to.equal(3);
   });
 
   it('should calculate minutes of turnaround time', function(){
     var workingHours = 2;
-    var turnaround = new calc.Turnaround(workingHours);
+    turnaround = new calc.Turnaround(workingHours);
     expect(turnaround.minutes).to.equal(120);
   });
 });
@@ -33,7 +35,7 @@ describe('Submit Date', function(){
     date = new Date('December 6, 2014 15:05:30');
   });
 
-  it('should create object', function(){
+  it('should create submitDate object', function(){
     submitDate = new calc.SubmitDate(date);
     expect(submitDate).to.be.an('object');
   });
@@ -59,5 +61,29 @@ describe('Submit Date', function(){
   it('should calculate remaining minutes on submit date', function(){
     submitDate = new calc.SubmitDate(date);
     expect(submitDate.remainingMinutes()).to.equal(115);
+  });
+});
+
+describe('Due Date', function(){
+  //var date;
+  var submitDate;
+  var dueDate;
+  //var workingHours;
+  var turnaroundTime;
+
+  beforeEach(function(){
+    submitDate = new Date('December 6, 2014 15:05:30');
+    //submitDate = new calc.SubmitDate(date);
+    turnaroundTime = 19;
+    //turnaround = new calc.Turnaround(workingHours);
+  });
+
+  it('should create a dueDate object', function(){
+    dueDate = new calc.DueDate(submitDate, turnaroundTime);
+    expect(dueDate).to.be.an('object');
+  });
+
+  it('should check if there is enough time on the day of submit day', function(){
+
   });
 });

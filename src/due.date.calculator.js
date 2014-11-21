@@ -23,4 +23,9 @@ calc.SubmitDate.prototype.remainingMinutes = function(){
   return 60 - this.minutes + (calc.endWorkingHours - (this.hours + 1)) * 60;
 };
 
+calc.DueDate = function(submitDate, turnaroundTime){
+  this.submitDate = new calc.SubmitDate(submitDate);
+  this.turnaroundTime = new calc.Turnaround(turnaroundTime);
+};
+
 module.exports = calc;
