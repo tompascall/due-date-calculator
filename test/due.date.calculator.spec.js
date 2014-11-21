@@ -20,16 +20,28 @@ describe('Turnaround Time', function(){
 });
 
 describe('Submit Date', function(){
+  var date;
+  var submitDate;
+
+  beforeEach(function(){
+    date = new Date('December 6, 2014 6:00:30');
+  });
+
   it('should create object', function(){
-    var date = new Date();
-    var submitDate = new calc.SubmitDate(date);
+    submitDate = new calc.SubmitDate(date);
     expect(submitDate).to.be.an('object');
   });
 
-  it('should get day of the month', function(){
-    var date = new Date();
+  it('should get day of the submit date', function(){
     date.setDate(1);
-    var submitDate = new calc.SubmitDate(date);
+    submitDate = new calc.SubmitDate(date);
     expect(submitDate.day).to.equal(1);
+  });
+
+  it('should get hours of submit date', function(){
+    date.setHours(14);
+    submitDate = new calc.SubmitDate(date);
+    expect(submitDate.hours).to.equal(14);
+
   });
 });

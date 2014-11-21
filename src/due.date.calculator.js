@@ -11,6 +11,7 @@ calc.Turnaround = function(workingHours){
 
 calc.SubmitDate = function(date){
   this.day = date.getDate();
+  this.hours = date.getHours();
 };
 
 module.exports = calc;
