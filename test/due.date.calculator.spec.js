@@ -65,25 +65,35 @@ describe('Submit Date', function(){
 });
 
 describe('Due Date', function(){
-  //var date;
   var submitDate;
-  var dueDate;
-  //var workingHours;
+  var due;
   var turnaroundTime;
 
   beforeEach(function(){
     submitDate = new Date('December 6, 2014 15:05:30');
-    //submitDate = new calc.SubmitDate(date);
     turnaroundTime = 19;
-    //turnaround = new calc.Turnaround(workingHours);
+    due = new calc.Due(submitDate, turnaroundTime);
   });
 
-  it('should create a dueDate object', function(){
-    dueDate = new calc.DueDate(submitDate, turnaroundTime);
-    expect(dueDate).to.be.an('object');
+  it('should create a due object', function(){
+    turnaroundTime = 19;
+    due = new calc.Due(submitDate, turnaroundTime);
+    expect(due).to.be.an('object');
   });
 
   it('should check if there is enough time on the day of submit day', function(){
+    turnaroundTime = 19;
+    due = new calc.Due(submitDate, turnaroundTime);
+    expect(due.onSubmitDay()).to.equal(false);
+  });
 
+  it('should calculate due date if there is enough time on the day of submit day', function(){
+    turnaroundTime = 1;
+    var dueDate = new Date();
+    dueDate.setTime(submitDate.getTime()); // copy submitDate
+    dueDate.setHours(dueDate.getHours() + turnaroundTime);
+    due = new calc.Due(submitDate, turnaroundTime);
+    expect(due.calculateDueDate(submitDate, turnaroundTime)
+      .getTime()).to.equal(dueDate.getTime());
   });
 });
