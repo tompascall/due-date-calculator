@@ -21,8 +21,15 @@ describe('Turnaround Time', function(){
 
 describe('Submit Date', function(){
   it('should create object', function(){
-    var submitDate = new calc.SubmitDate();
+    var date = new Date();
+    var submitDate = new calc.SubmitDate(date);
     expect(submitDate).to.be.an('object');
   });
 
+  it('should get day of the month', function(){
+    var date = new Date();
+    date.setDate(1);
+    var submitDate = new calc.SubmitDate(date);
+    expect(submitDate.day).to.equal(1);
+  });
 });
