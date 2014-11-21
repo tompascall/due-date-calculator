@@ -6,15 +6,23 @@ var expect = require('expect.js');
 var calc = require('../src/due.date.calculator.js');
 
 describe('Turnaround Time', function(){
-  it('should check create object', function(){
+  it('should create object', function(){
     var turnaround = new calc.Turnaround();
     expect(turnaround).to.be.an('object');
   });
 
   it('should calculate days and hours of turnaround time', function(){
-    var turnaroundTime = 19;
-    var turnaround = new calc.Turnaround(turnaroundTime);
+    var workingHours = 19;
+    var turnaround = new calc.Turnaround(workingHours);
     expect(turnaround.days).to.equal(2);
     expect(turnaround.hours).to.equal(3);
   });
+});
+
+describe('Submit Date', function(){
+  it('should create object', function(){
+    var submitDate = new calc.SubmitDate();
+    expect(submitDate).to.be.an('object');
+  });
+
 });

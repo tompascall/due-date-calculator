@@ -4,9 +4,13 @@
 
 var calc = {};
 
-calc.Turnaround = function(turnaroundTime){
-  this.days = Math.floor(turnaroundTime / 8);
-  this.hours = turnaroundTime % 8;
+calc.Turnaround = function(workingHours){
+  this.days = Math.floor(workingHours / 8);
+  this.hours = workingHours % 8;
+};
+
+calc.SubmitDate = function(){
+
 };
 
 module.exports = calc;
