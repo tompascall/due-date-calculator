@@ -15,7 +15,7 @@ describe('Turnaround Time', function(){
     var workingHours = 19;
     var turnaround = new calc.Turnaround(workingHours);
     expect(turnaround.days).to.equal(2);
-    expect(turnaround.hours).to.equal(3);
+    expect(turnaround.remainderHours).to.equal(3);
   });
 });
 
@@ -24,7 +24,7 @@ describe('Submit Date', function(){
   var submitDate;
 
   beforeEach(function(){
-    date = new Date('December 6, 2014 6:00:30');
+    date = new Date('December 6, 2014 15:05:30');
   });
 
   it('should create object', function(){
@@ -48,5 +48,10 @@ describe('Submit Date', function(){
     date.setMinutes(30);
     submitDate = new calc.SubmitDate(date);
     expect(submitDate.minutes).to.equal(30);
+  });
+
+  it('should calculate remaining minutes on submit date', function(){
+    submitDate = new calc.SubmitDate(date);
+    expect(submitDate.remainingMinutes()).to.equal(115);
   });
 });
