@@ -20,7 +20,7 @@ describe('Turnaround Time', function(){
     expect(turnaround.remainderHours).to.equal(3);
   });
 
-  it('should calculate minutes of turnaround time', function(){
+  it('should calculate turnaround time as minutes', function(){
     var turnaroundTime = 2;
     turnaround = new calc.Turnaround(turnaroundTime);
     expect(turnaround.minutes).to.equal(120);
@@ -41,9 +41,9 @@ describe('Submit Date', function(){
   });
 
   it('should get day of the submit date', function(){
-    date.setDate(1);
+    date.setDate(15);
     submitDate = new calc.SubmitDate(date);
-    expect(submitDate.day).to.equal(1);
+    expect(submitDate.day).to.equal(15);
   });
 
   it('should get hours of submit date', function(){
@@ -60,7 +60,7 @@ describe('Submit Date', function(){
 
   it('should calculate remaining minutes on submit day', function(){
     submitDate = new calc.SubmitDate(date);
-    expect(submitDate.remainingMinutesOnSubmitDay()).to.equal(115);
+    expect(submitDate.remainingMinutesOnSubmitDay()).to.equal(115); // we don't care seconds
   });
 
   it('should calculate remaining hours on submit day', function(){
@@ -96,26 +96,23 @@ describe('Due Date', function(){
     expect(due.turnaroundTime.minutes).to.equal(turnaroundTime * 60);
   });
 
-  it('should check if there is enough time on the day of submit day', function(){
+  it('should check if there is due time on the day of submit day', function(){
     due = new calc.Due();
     due.init(submitDate, turnaroundTime);
     expect(due.onSubmitDay()).to.equal(false);
+
+    turnaroundTime = 1;
+    due.init(submitDate, turnaroundTime);
+    expect(due.onSubmitDay()).to.equal(true);
   });
 
-  it('should calculate due date if there is enough time on submit day', function(){
+  it('should calculate due date if due time is on submit day', function(){
     turnaroundTime = 1;
-    var testDueDate = testDate(submitDate, turnaroundTime);
+    var testDueDate = new Date('December 5, 2014 16:05:30');
     due = new calc.Due();
     due.init(submitDate, turnaroundTime);
     var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
     expect(dueDate.getTime()).to.equal(testDueDate.getTime());
-
-    function testDate(submitDate, turnaroundTime){
-      var date = new Date();
-      date.setTime(submitDate.getTime()); // copy submitDate
-      date.setHours(date.getHours() + turnaroundTime);
-      return date;
-    }
   });
 
   it('should copy date', function(){
@@ -130,14 +127,19 @@ describe('Due Date', function(){
     due.init(submitDate, turnaroundTime);
     expect(due.getDueDay().getDate()).to.equal(5);
 
+    turnaroundTime = 2;
+    due = new calc.Due();
+    due.init(submitDate, turnaroundTime);
+    expect(due.getDueDay().getDate()).to.equal(8);
+
     turnaroundTime = 19;
     due = new calc.Due();
     due.init(submitDate, turnaroundTime);
     expect(due.getDueDay().getDate()).to.equal(10);
   });
 
-  it('should get due date if there are overlow hours', function(){
-    turnaroundTime = 19;
+  it('should get due date if there are overflow hours', function(){
+    turnaroundTime = 19; // 3 hours as overflow
     due = new calc.Due();
     due.init(submitDate, turnaroundTime);
     var testDate = new Date('December 10, 2014 11:05:30');
@@ -146,7 +148,7 @@ describe('Due Date', function(){
   });
 
   it('should get due date if there are no overflow hours', function(){
-    turnaroundTime = 17;
+    turnaroundTime = 17; // 1 hour as not overflow
     due = new calc.Due();
     due.init(submitDate, turnaroundTime);
     var testDate = new Date('December 9, 2014 16:05:30');
