@@ -13,6 +13,7 @@
     "calculator",
     "grunt",
     "mocha",
+    "node.js",
     "expect.js"
   ],
   "repository": {
