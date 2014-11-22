@@ -14,15 +14,15 @@ describe('Turnaround Time', function(){
   });
 
   it('should calculate days and remainder hours of turnaround time', function(){
-    var workingHours = 19;
-    turnaround = new calc.Turnaround(workingHours);
+    var turnaroundTime = 19;
+    turnaround = new calc.Turnaround(turnaroundTime);
     expect(turnaround.days).to.equal(2);
     expect(turnaround.remainderHours).to.equal(3);
   });
 
   it('should calculate minutes of turnaround time', function(){
-    var workingHours = 2;
-    turnaround = new calc.Turnaround(workingHours);
+    var turnaroundTime = 2;
+    turnaround = new calc.Turnaround(turnaroundTime);
     expect(turnaround.minutes).to.equal(120);
   });
 });
@@ -117,5 +117,10 @@ describe('Due Date', function(){
     }
   });
 
+  it('should copy date', function(){
+    var date = new Date();
+    calc.copyDate(submitDate, date);
+    expect(date.getTime()).to.equal(submitDate.getTime());
+  });
 
 });

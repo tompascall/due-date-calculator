@@ -7,6 +7,10 @@ var calc = {
   endWorkingHours : 17
 };
 
+calc.copyDate = function(srcDate, destDate){
+  destDate.setTime(srcDate.getTime());
+};
+
 calc.Turnaround = function(turnaroundTime){
   this.days = Math.floor(turnaroundTime / (calc.endWorkingHours - calc.startWorkingHours));
   this.remainderHours = turnaroundTime % (calc.endWorkingHours - calc.startWorkingHours);
