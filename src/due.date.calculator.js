@@ -58,13 +58,44 @@ calc.Due.prototype.onSubmitDay = function(){
 };
 
 calc.Due.prototype.dayDistance = function(){
-  if (this.onSubmitDay()) return 0;
+  var day = this.submitDate.day;
+  var dist = 0;
   var date = new Date();
   calc.copyDate(this.submitDate.date, date);
-  //var dist = this.turnaroundTime.days; // minimum day distance
 
-  //date.setDate(date.getDate() + dist);
+  if (this.onSubmitDay()) return dist;
 
+
+  if (!this.turnaroundTime.days) {
+    day++;
+    dist++;
+    date.setDate(day);
+    if (date.getDay() === 6) {
+      dist += 2;
+      return dist;
+    }
+  }
+
+  for (var i = 1; i <= this.turnaroundTime.days; i++){
+    dist++;
+    day++;
+    date.setDate(day);
+    if (date.getDay() === 6){ // Saturday
+      dist += 2;
+      day += 2;
+    }
+  }
+
+  if (this.turnaroundTime.remainderHours > this.submitDate.remainingHoursOnSubmitDay()){
+    day++;
+    dist++;
+    date.setDate(day);
+    if (date.getDay() === 6) {
+      dist += 2;
+      day += 2;
+    }
+  }
+  return dist;
 };
 
 calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
