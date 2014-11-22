@@ -45,12 +45,10 @@ calc.Due.prototype.setSubmitDate = function(submitDate){
   var date = new Date();
   calc.copyDate(submitDate, date);
   this.submitDate = new calc.SubmitDate(date);
-  this.storeSubmitDate = new calc.SubmitDate(date);
 };
 
 calc.Due.prototype.setTurnaroundTime = function(turnaroundTime){
   this.turnaroundTime = new calc.Turnaround(turnaroundTime);
-  this.storeTurnaroundTime = new calc.Turnaround(turnaroundTime);
 };
 
 calc.Due.prototype.init = function(submitDate, turnaroundTime){
@@ -61,13 +59,14 @@ calc.Due.prototype.init = function(submitDate, turnaroundTime){
 };
 
 calc.Due.prototype.onSubmitDay = function(){
-  return (this.overflowHours) ? false : true;
+  return (this.submitDate.remainingMinutesOnSubmitDay() >
+    this.turnaroundTime.minutes) ? true : false;
 };
 
 calc.Due.prototype.getNextDay = function(date, day){
   day++;
   date.setDate(day);
-  if (date.getDay() === 6) {
+  if (date.getDay() === 6) { // Saturday
     day += 2;
   }
   return day;
@@ -78,8 +77,7 @@ calc.Due.prototype.getDueDay = function(){
   var date = new Date();
   calc.copyDate(this.submitDate.date, date);
 
-  if (this.submitDate.remainingMinutesOnSubmitDay() >
-    this.turnaroundTime.minutes) return date;
+  if (this.onSubmitDay()) return date;
 
   if (!this.turnaroundTime.days) {
     day = this.getNextDay(date, day);
@@ -99,7 +97,7 @@ calc.Due.prototype.getDueDay = function(){
   return date;
 };
 
-calc.Due.prototype.sameDay = function(dueDate){
+calc.Due.prototype.dueDateOnSameDay = function(dueDate){
   dueDate.setMinutes(this.submitDate.date.getMinutes() + this.turnaroundTime.minutes);
   return dueDate;
 };
@@ -109,11 +107,12 @@ calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   var dueDate = this.getDueDay();
 
   if (dueDate.getDate() === this.submitDate.date.getDate()){
-    return this.sameDay(dueDate);
+    return this.dueDateOnSameDay(dueDate);
   }
 
   if (this.overflowHours) {
-    var diff = this.turnaroundTime.remainderHours - this.submitDate.remainingHoursOnSubmitDay();
+    var diff = this.turnaroundTime.remainderHours -
+      this.submitDate.remainingHoursOnSubmitDay();
     dueDate.setHours(calc.startWorkingHours + diff);
     return dueDate;
   }
