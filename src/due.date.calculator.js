@@ -7,10 +7,10 @@ var calc = {
   endWorkingHours : 17
 };
 
-calc.Turnaround = function(workingHours){
-  this.days = Math.floor(workingHours / (calc.endWorkingHours - calc.startWorkingHours));
-  this.remainderHours = workingHours % (calc.endWorkingHours - calc.startWorkingHours);
-  this.minutes = workingHours * 60;
+calc.Turnaround = function(turnaroundTime){
+  this.days = Math.floor(turnaroundTime / (calc.endWorkingHours - calc.startWorkingHours));
+  this.remainderHours = turnaroundTime % (calc.endWorkingHours - calc.startWorkingHours);
+  this.minutes = turnaroundTime * 60;
 };
 
 calc.SubmitDate = function(date){
@@ -20,30 +20,38 @@ calc.SubmitDate = function(date){
   this.date = date;
 };
 
-calc.SubmitDate.prototype.remainingMinutes = function(){
+calc.SubmitDate.prototype.remainingMinutesOnSubmitDay = function(){
   return 60 - this.minutes + (calc.endWorkingHours - (this.hours + 1)) * 60;
 };
 
-calc.Due = function(submitDate, turnaroundTime){
-  this.submitDate = new calc.SubmitDate(submitDate);
+calc.Due = function(){
+
+};
+
+calc.Due.prototype.setSubmitDate = function(submitDate){
+  var date = new Date();
+  date.setTime(submitDate.getTime());
+  this.submitDate = new calc.SubmitDate(date);
+};
+
+calc.Due.prototype.setTurnaroundTime = function(turnaroundTime){
   this.turnaroundTime = new calc.Turnaround(turnaroundTime);
 };
 
 calc.Due.prototype.onSubmitDay = function(){
-  return (this.submitDate.remainingMinutes() < this.turnaroundTime.minutes) ? false : true;
+  return (this.submitDate.remainingMinutesOnSubmitDay() < this.turnaroundTime.minutes) ? false : true;
 };
 
 calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
-  this.dueDate = new calc.SubmitDate(submitDate);
-  this.turnaroundTime = new calc.Turnaround(turnaroundTime);
-    // to set this.turnaroundTime is quite unnecessary, because it has been set
-    // in the constructor already, but according to the description of the task
-    // the calculateDueDate() method needs turnaroundTime parameter
+  this.setSubmitDate(submitDate);
+  this.setTurnaroundTime(turnaroundTime);
+  var dueDate = new Date();
+  dueDate.setTime(submitDate.getTime());
   if (this.onSubmitDay){
-    this.dueDate.date.setMinutes(this.submitDate.date.getMinutes() +
-      this.turnaroundTime.minutes);
+    dueDate.setMinutes(this.submitDate.date.getMinutes() + this.turnaroundTime.minutes);
+    return dueDate;
   }
-  return this.dueDate.date;
+
 };
 
 module.exports = calc;
