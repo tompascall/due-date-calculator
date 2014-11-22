@@ -57,53 +57,55 @@ calc.Due.prototype.onSubmitDay = function(){
   return (this.submitDate.remainingMinutesOnSubmitDay() < this.turnaroundTime.minutes) ? false : true;
 };
 
-calc.Due.prototype.dayDistance = function(){
+calc.Due.prototype.getDueDay = function(){
   var day = this.submitDate.day;
-  var dist = 0;
+  //var dist = 0;
   var date = new Date();
   calc.copyDate(this.submitDate.date, date);
 
-  if (this.onSubmitDay()) return dist;
+  if (this.onSubmitDay()) return date;
 
 
   if (!this.turnaroundTime.days) {
     day++;
-    dist++;
+   // dist++;
     date.setDate(day);
     if (date.getDay() === 6) {
-      dist += 2;
-      return dist;
+      //dist += 2;
+      return date;
     }
   }
 
   for (var i = 1; i <= this.turnaroundTime.days; i++){
-    dist++;
+   // dist++;
     day++;
     date.setDate(day);
     if (date.getDay() === 6){ // Saturday
-      dist += 2;
+      //dist += 2;
       day += 2;
     }
   }
 
   if (this.turnaroundTime.remainderHours > this.submitDate.remainingHoursOnSubmitDay()){
     day++;
-    dist++;
+    //dist++;
     date.setDate(day);
     if (date.getDay() === 6) {
-      dist += 2;
+     // dist += 2;
       day += 2;
     }
   }
-  return dist;
+  return date;
 };
 
 calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   this.setSubmitDate(submitDate);
   this.setTurnaroundTime(turnaroundTime);
-  var dueDate = new Date();
-  calc.copyDate(submitDate, dueDate);
-  if (this.dayDistance() === 0){
+
+  //calc.copyDate(submitDate, dueDate);
+  var dueDate = this.getDueDay();
+
+  if (dueDate.getDate() === this.submitDate.date.getDate()){
     dueDate.setMinutes(this.submitDate.date.getMinutes() + this.turnaroundTime.minutes);
     return dueDate;
   }

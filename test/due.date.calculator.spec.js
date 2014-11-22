@@ -126,17 +126,17 @@ describe('Due Date', function(){
     expect(date.getTime()).to.equal(submitDate.getTime());
   });
 
-  it('should get due day distance from submit day', function(){
-    turnaroundTime = 6;
+  it('should get due day', function(){
+    turnaroundTime = 1;
     due = new calc.Due();
     due.setSubmitDate(submitDate);
     due.setTurnaroundTime(turnaroundTime);
-    expect(due.dayDistance()).to.equal(3);
+    expect(due.getDueDay().getDate()).to.equal(5);
 
     turnaroundTime = 19;
     due = new calc.Due();
     due.setSubmitDate(submitDate);
     due.setTurnaroundTime(turnaroundTime);
-    expect(due.dayDistance()).to.equal(5);
+    expect(due.getDueDay().getDate()).to.equal(10);
   });
 });
