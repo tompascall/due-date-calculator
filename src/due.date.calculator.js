@@ -56,7 +56,8 @@ calc.Due.prototype.setTurnaroundTime = function(turnaroundTime){
 calc.Due.prototype.init = function(submitDate, turnaroundTime){
   this.setSubmitDate(submitDate);
   this.setTurnaroundTime(turnaroundTime);
-  this.overflowHours = this.submitDate.remainingMinutesOnSubmitDay() < this.turnaroundTime.minutes;
+  this.overflowHours = this.submitDate.remainingHoursOnSubmitDay() <
+    this.turnaroundTime.remainderHours;
 };
 
 calc.Due.prototype.onSubmitDay = function(){
@@ -77,7 +78,8 @@ calc.Due.prototype.getDueDay = function(){
   var date = new Date();
   calc.copyDate(this.submitDate.date, date);
 
-  if (this.onSubmitDay()) return date;
+  if (this.submitDate.remainingMinutesOnSubmitDay() >
+    this.turnaroundTime.minutes) return date;
 
   if (!this.turnaroundTime.days) {
     day = this.getNextDay(date, day);
@@ -107,15 +109,23 @@ calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   var dueDate = this.getDueDay();
 
   if (dueDate.getDate() === this.submitDate.date.getDate()){
+    console.log('submit: ' + this.submitDate.hours);
+    console.log('turnaround: ' + this.turnaroundTime.remainderHours);
     return this.sameDay(dueDate);
   }
 
   if (this.overflowHours) {
     var diff = this.turnaroundTime.remainderHours - this.submitDate.remainingHoursOnSubmitDay();
     dueDate.setHours(calc.startWorkingHours + diff);
+    //console.log('submit: ' + this.submitDate.hours);
+    //console.log('turnaround: ' + this.turnaroundTime.remainderHours);
     return dueDate;
   }
 
+  //console.log('submit: ' + this.submitDate.hours);
+  //console.log('turnaround: ' + this.turnaroundTime.remainderHours);
+  dueDate.setHours(this.submitDate.hours + this.turnaroundTime.remainderHours);
+  return dueDate;
 };
 
 module.exports = calc;

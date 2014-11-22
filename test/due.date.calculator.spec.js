@@ -144,4 +144,13 @@ describe('Due Date', function(){
     var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
     expect(testDate.getTime()).to.equal(dueDate.getTime());
   });
+
+  it('should get due date if there are no overflow hours', function(){
+    turnaroundTime = 17;
+    due = new calc.Due();
+    due.init(submitDate, turnaroundTime);
+    var testDate = new Date('December 9, 2014 16:05:30');
+    var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(testDate.getTime()).to.equal(dueDate.getTime());
+  });
 });
