@@ -98,19 +98,17 @@ describe('Due Date', function(){
 
   it('should check if there is enough time on the day of submit day', function(){
     due = new calc.Due();
-    due.setSubmitDate(submitDate);
-    due.setTurnaroundTime(turnaroundTime);
+    due.init(submitDate, turnaroundTime);
     expect(due.onSubmitDay()).to.equal(false);
   });
 
   it('should calculate due date if there is enough time on submit day', function(){
     turnaroundTime = 1;
-    var dueDate = testDate(submitDate, turnaroundTime);
+    var testDueDate = testDate(submitDate, turnaroundTime);
     due = new calc.Due();
-    due.setSubmitDate(submitDate);
-    due.setTurnaroundTime(turnaroundTime);
-    expect(due.calculateDueDate(submitDate, turnaroundTime)
-      .getTime()).to.equal(dueDate.getTime());
+    due.init(submitDate, turnaroundTime);
+    var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.equal(testDueDate.getTime());
 
     function testDate(submitDate, turnaroundTime){
       var date = new Date();
@@ -126,17 +124,24 @@ describe('Due Date', function(){
     expect(date.getTime()).to.equal(submitDate.getTime());
   });
 
-  it('should get due day', function(){
+  it('should get the day of due date', function(){
     turnaroundTime = 1;
     due = new calc.Due();
-    due.setSubmitDate(submitDate);
-    due.setTurnaroundTime(turnaroundTime);
+    due.init(submitDate, turnaroundTime);
     expect(due.getDueDay().getDate()).to.equal(5);
 
     turnaroundTime = 19;
     due = new calc.Due();
-    due.setSubmitDate(submitDate);
-    due.setTurnaroundTime(turnaroundTime);
+    due.init(submitDate, turnaroundTime);
     expect(due.getDueDay().getDate()).to.equal(10);
+  });
+
+  it('should get due date if there are overlow hours', function(){
+    turnaroundTime = 19;
+    due = new calc.Due();
+    due.init(submitDate, turnaroundTime);
+    var testDate = new Date('December 10, 2014 11:05:30');
+    var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(testDate.getTime()).to.equal(dueDate.getTime());
   });
 });
