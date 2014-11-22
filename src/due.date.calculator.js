@@ -57,6 +57,15 @@ calc.Due.prototype.onSubmitDay = function(){
   return (this.submitDate.remainingMinutesOnSubmitDay() < this.turnaroundTime.minutes) ? false : true;
 };
 
+calc.Due.prototype.getNextDay = function(date, day){
+  day++;
+  date.setDate(day);
+  if (date.getDay() === 6) {
+    day += 2;
+  }
+  return day;
+};
+
 calc.Due.prototype.getDueDay = function(){
   var day = this.submitDate.day;
   var date = new Date();
@@ -64,30 +73,21 @@ calc.Due.prototype.getDueDay = function(){
 
   if (this.onSubmitDay()) return date;
 
-
   if (!this.turnaroundTime.days) {
-    day++;
+    day = this.getNextDay(date, day);
     date.setDate(day);
-    if (date.getDay() === 6) { // Saturday
-      return date;
-    }
+    return date;
   }
 
   for (var i = 1; i <= this.turnaroundTime.days; i++){
-    day++;
-    date.setDate(day);
-    if (date.getDay() === 6){
-      day += 2;
-    }
+    day = this.getNextDay(date, day);
   }
 
   if (this.turnaroundTime.remainderHours > this.submitDate.remainingHoursOnSubmitDay()){
-    day++;
-    date.setDate(day);
-    if (date.getDay() === 6) {
-      day += 2;
-    }
+    day = this.getNextDay(date, day);
   }
+
+  date.setDate(day);
   return date;
 };
 
