@@ -32,7 +32,7 @@ describe('Submit Date', function(){
   var submitDate;
 
   beforeEach(function(){
-    date = new Date('December 6, 2014 15:05:30');
+    date = new Date('December 5, 2014 15:05:30');
   });
 
   it('should create submitDate object', function(){
@@ -62,6 +62,11 @@ describe('Submit Date', function(){
     submitDate = new calc.SubmitDate(date);
     expect(submitDate.remainingMinutesOnSubmitDay()).to.equal(115);
   });
+
+  it('should calculate remaining hours on submit day', function(){
+    submitDate = new calc.SubmitDate(date);
+    expect(submitDate.remainingHoursOnSubmitDay()).to.equal(1);
+  });
 });
 
 describe('Due Date', function(){
@@ -70,7 +75,7 @@ describe('Due Date', function(){
   var turnaroundTime;
 
   beforeEach(function(){
-    submitDate = new Date('December 6, 2014 15:05:30');
+    submitDate = new Date('December 5, 2014 15:05:30');
     turnaroundTime = 19;
   });
 
@@ -86,14 +91,12 @@ describe('Due Date', function(){
   });
 
   it('should set turnaround time', function(){
-    turnaroundTime = 19;
     due = new calc.Due();
     due.setTurnaroundTime(turnaroundTime);
     expect(due.turnaroundTime.minutes).to.equal(turnaroundTime * 60);
   });
 
   it('should check if there is enough time on the day of submit day', function(){
-    turnaroundTime = 19;
     due = new calc.Due();
     due.setSubmitDate(submitDate);
     due.setTurnaroundTime(turnaroundTime);
@@ -123,4 +126,11 @@ describe('Due Date', function(){
     expect(date.getTime()).to.equal(submitDate.getTime());
   });
 
+  // it('should get due day distance from submit day', function(){
+  //   turnaroundTime = 6;
+  //   due = new calc.Due();
+  //   due.setSubmitDate(submitDate);
+  //   due.setTurnaroundTime(turnaroundTime);
+  //   expect(due.dayDistance()).to.equal(3);
+  // });
 });
