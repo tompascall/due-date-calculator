@@ -4,12 +4,10 @@ This project represents `calculateDueDate(submitDate, turnaroundTime)` method fo
 
 - Working hours are 9AM to 5PM every working day (Monday through Friday)
 - The program does not deal with holidays, which means that a holiday on a Thursday is still considered as a working day. Also a working Saturday will still be considered as a nonworking day
-- `turnaroundTime` must be given in working hours, which means for example that 2 days are 16 hours. As an example: if a problem was reported at 2:12PM on Tuesday then it is due by 2:12PM on Thursday.
+- `turnaroundTime` argument must be given in working hours, which means for example that 2 days are 16 hours. As an example: if a problem was reported at 2:12PM on Tuesday then it is due by 2:12PM on Thursday.
 - A submisson can only be during working hours, which means that all submit date values fall between 9AM and 5PM.
 
-`calculateDueDate()` method gives back a **Date() object**.
-
-It is a method of `calc.Due` class, so you need to instantiate it, for example
+The `calculateDueDate()` method gives back a **Date() object**. It is a method of `calc.Due` class, so you need to instantiate it, for example
 
 ```js
 var due = new calc.Due();
@@ -48,7 +46,6 @@ When developing, run:
   - `grunt-mocha-cli` (Mocha testing framework for Grunt)
   - `grunt-contrib-clean` (cleaning up the boilerplate)
 - Expect.js as an assertion framework
-- Sinon.js as a mocking tool
 
 ####EditorConfig
 
