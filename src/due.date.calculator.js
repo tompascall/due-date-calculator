@@ -109,21 +109,15 @@ calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   var dueDate = this.getDueDay();
 
   if (dueDate.getDate() === this.submitDate.date.getDate()){
-    console.log('submit: ' + this.submitDate.hours);
-    console.log('turnaround: ' + this.turnaroundTime.remainderHours);
     return this.sameDay(dueDate);
   }
 
   if (this.overflowHours) {
     var diff = this.turnaroundTime.remainderHours - this.submitDate.remainingHoursOnSubmitDay();
     dueDate.setHours(calc.startWorkingHours + diff);
-    //console.log('submit: ' + this.submitDate.hours);
-    //console.log('turnaround: ' + this.turnaroundTime.remainderHours);
     return dueDate;
   }
 
-  //console.log('submit: ' + this.submitDate.hours);
-  //console.log('turnaround: ' + this.turnaroundTime.remainderHours);
   dueDate.setHours(this.submitDate.hours + this.turnaroundTime.remainderHours);
   return dueDate;
 };
