@@ -34,7 +34,7 @@ calc.Due = function(){
 
 calc.Due.prototype.setSubmitDate = function(submitDate){
   var date = new Date();
-  date.setTime(submitDate.getTime());
+  calc.copyDate(submitDate, date);
   this.submitDate = new calc.SubmitDate(date);
 };
 
@@ -50,7 +50,7 @@ calc.Due.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   this.setSubmitDate(submitDate);
   this.setTurnaroundTime(turnaroundTime);
   var dueDate = new Date();
-  dueDate.setTime(submitDate.getTime());
+  calc.copyDate(submitDate, dueDate);
   if (this.onSubmitDay){
     dueDate.setMinutes(this.submitDate.date.getMinutes() + this.turnaroundTime.minutes);
     return dueDate;
