@@ -63,10 +63,16 @@ describe('Validation', function(){
     expect(dest.getTime()).to.equal(source.getTime());
   });
 
-  it('should set submit date property', function(){
+  it('should set submitDate property', function(){
     submitDate = new Date('December 24, 2014 18:00:00');
     due.setSubmitDate(submitDate);
     expect(due.submitDate.getTime()).to.equal(submitDate.getTime());
+  });
+
+  it('should set TurnaroundTime property', function(){
+    var turnaroundTime = 3;
+    due.setTurnaroundTime(turnaroundTime);
+    expect(due.turnaroundTime).to.equal(turnaroundTime);
   });
 });
 

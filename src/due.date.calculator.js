@@ -42,6 +42,8 @@ calc.DueDate.prototype.setSubmitDate = function(submitDate){
   this.submitDate = date;
 };
 
-
+calc.DueDate.prototype.setTurnaroundTime = function(turnaroundTime){
+  this.turnaroundTime = turnaroundTime;
+};
 
 module.exports = calc;
