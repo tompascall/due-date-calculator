@@ -3,10 +3,11 @@
 'use strict';
 
 var calc = {
-  startWorkingHours : 9,
-  endWorkingHours : 17
+
 };
 
+calc.DueDate = function(){
 
+};
 
 module.exports = calc;
