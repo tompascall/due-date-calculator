@@ -10,4 +10,10 @@ describe('Validation', function(){
     var due = new calc.DueDate();
     expect(due).to.be.an('object');
   });
+
+  it('should validate that submit date argument is a date object', function(){
+    var due = new calc.DueDate();
+    var submitDate = new Date();
+    expect(due.validateSubmitDate(submitDate)).to.equal(true);
+  });
 });

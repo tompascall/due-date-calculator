@@ -10,4 +10,9 @@ calc.DueDate = function(){
 
 };
 
+
+calc.DueDate.prototype.validateSubmitDate = function(submitDate){
+  return submitDate instanceof Date;
+};
+
 module.exports = calc;
