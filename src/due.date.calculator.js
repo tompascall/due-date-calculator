@@ -35,4 +35,13 @@ calc.DueDate.prototype.validateTurnaroundTime = function(turnaroundTime){
 calc.DueDate.prototype.copyDate = function(source, dest){
   dest.setTime(source.getTime());
 };
+
+calc.DueDate.prototype.setSubmitDate = function(submitDate){
+  var date = new Date();
+  this.copyDate(submitDate, date);
+  this.submitDate = date;
+};
+
+
+
 module.exports = calc;

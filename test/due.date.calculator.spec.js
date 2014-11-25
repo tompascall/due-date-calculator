@@ -62,4 +62,11 @@ describe('Validation', function(){
     due.copyDate(source, dest);
     expect(dest.getTime()).to.equal(source.getTime());
   });
+
+  it('should set submit date property', function(){
+    submitDate = new Date('December 24, 2014 18:00:00');
+    due.setSubmitDate(submitDate);
+    expect(due.submitDate.getTime()).to.equal(submitDate.getTime());
+  });
 });
+
