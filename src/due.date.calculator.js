@@ -12,7 +12,10 @@ calc.DueDate = function(){
 
 
 calc.DueDate.prototype.validateSubmitDate = function(submitDate){
-  return submitDate instanceof Date;
+  if (submitDate instanceof Date) {
+    return true;
+  }
+  else throw new Error('submitDate is not a Date object');
 };
 
 calc.DueDate.prototype.checkWorkingHours = function(submitDate, startWorkingHours, endWorkingHours){
