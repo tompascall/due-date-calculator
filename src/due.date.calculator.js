@@ -46,4 +46,15 @@ calc.DueDate.prototype.setTurnaroundTime = function(turnaroundTime){
   this.turnaroundTime = turnaroundTime;
 };
 
+calc.DueDate.prototype.init = function(submitDate, turnaroundTime){
+  if (this.validateSubmitDate(submitDate) && this.checkWorkingHours(submitDate)){
+    this.setSubmitDate(submitDate);
+  }
+  if (this.validateTurnaroundTime(turnaroundTime)) this.setTurnaroundTime(turnaroundTime);
+};
+
+calc.DueDate.prototype.calculateDueDate = function(submitDate, turnaroundTime){
+  this.init(submitDate, turnaroundTime);
+};
+
 module.exports = calc;
