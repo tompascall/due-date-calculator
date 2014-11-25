@@ -32,8 +32,8 @@ describe('Validation', function(){
   });
 
   it('should check that value of turnaroundTime is a whole number', function(){
-    var turnaroundTime = 10.2;
-    expect(due.validateTurnaroundTime(turnaroundTime)).to.equal(false);
+    var turnaroundTime = 10;
+    expect(due.validateTurnaroundTime(turnaroundTime)).to.equal(true);
   });
 
   it('should throw exception if submitDate is not a date object', function(){
@@ -48,5 +48,11 @@ describe('Validation', function(){
     submitDate.setHours(8);
     expect(due.checkWorkingHours).withArgs(submitDate, startWorkingHours, endWorkingHours)
       .to.throwException('submitDate is not within working hours');
+  });
+
+  it('should throw exception if turnaroundTime is not a whole number', function(){
+    var turnaroundTime = 10.2;
+    expect(due.validateTurnaroundTime).withArgs(turnaroundTime).to
+      .throwException('turnaroundTime is not a whole number');
   });
 });

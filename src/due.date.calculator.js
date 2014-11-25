@@ -26,7 +26,10 @@ calc.DueDate.prototype.checkWorkingHours = function(submitDate, startWorkingHour
 };
 
 calc.DueDate.prototype.validateTurnaroundTime = function(turnaroundTime){
-  return typeof(turnaroundTime) === 'number' && turnaroundTime === Math.floor(turnaroundTime);
+  if (typeof(turnaroundTime) === 'number' && turnaroundTime === Math.floor(turnaroundTime)) {
+    return true;
+  }
+  else throw new Error('turnaroundTime is not a whole number');
 };
 
 module.exports = calc;
