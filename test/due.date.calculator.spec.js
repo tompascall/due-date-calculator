@@ -55,4 +55,11 @@ describe('Validation', function(){
     expect(due.validateTurnaroundTime).withArgs(turnaroundTime).to
       .throwException('turnaroundTime is not a whole number');
   });
+
+  it('should copy date', function(){
+    var source = new Date('December 24, 2014 18:00:00');
+    var dest = new Date();
+    due.copyDate(source, dest);
+    expect(dest.getTime()).to.equal(source.getTime());
+  });
 });

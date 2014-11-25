@@ -32,4 +32,7 @@ calc.DueDate.prototype.validateTurnaroundTime = function(turnaroundTime){
   else throw new Error('turnaroundTime is not a whole number');
 };
 
+calc.DueDate.prototype.copyDate = function(source, dest){
+  dest.setTime(source.getTime());
+};
 module.exports = calc;
