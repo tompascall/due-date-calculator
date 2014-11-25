@@ -19,7 +19,10 @@ calc.DueDate.prototype.validateSubmitDate = function(submitDate){
 };
 
 calc.DueDate.prototype.checkWorkingHours = function(submitDate, startWorkingHours, endWorkingHours){
-  return submitDate.getHours() >= startWorkingHours && submitDate.getHours() <= endWorkingHours;
+  if (submitDate.getHours() >= startWorkingHours && submitDate.getHours() <= endWorkingHours) {
+    return true;
+  }
+  else throw new Error('submitDate is not within working hours');
 };
 
 calc.DueDate.prototype.validateTurnaroundTime = function(turnaroundTime){

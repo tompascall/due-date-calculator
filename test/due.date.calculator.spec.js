@@ -40,4 +40,13 @@ describe('Validation', function(){
     submitDate = 234;
     expect(due.validateSubmitDate).withArgs(submitDate).to.throwException('submitDate is not a Date object');
   });
+
+  it('should throw exception if submitDate is not within working hours', function(){
+    submitDate = new Date();
+    var startWorkingHours = 9;
+    var endWorkingHours = 17;
+    submitDate.setHours(8);
+    expect(due.checkWorkingHours).withArgs(submitDate, startWorkingHours, endWorkingHours)
+      .to.throwException('submitDate is not within working hours');
+  });
 });
