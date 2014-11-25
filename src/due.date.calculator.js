@@ -19,4 +19,8 @@ calc.DueDate.prototype.checkWorkingHours = function(submitDate, startWorkingHour
   return submitDate.getHours() >= startWorkingHours && submitDate.getHours() <= endWorkingHours;
 };
 
+calc.DueDate.prototype.validateTurnaroundTime = function(turnaroundTime){
+  return typeof(turnaroundTime) === 'number' && turnaroundTime === Math.floor(turnaroundTime);
+};
+
 module.exports = calc;
