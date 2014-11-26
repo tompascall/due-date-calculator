@@ -76,3 +76,20 @@ describe('Validation', function(){
   });
 });
 
+describe('Calculate the number of hours to due date', function(){
+  var due;
+  var submitDate;
+  var turnaroundTime;
+
+  beforeEach(function(){
+    due = new calc.DueDate();
+  });
+
+  it('should set starting hours of submitDate', function(){
+    submitDate = new Date('December 24, 2014 15:05:00');
+    turnaroundTime = 2;
+    due.init(submitDate, turnaroundTime);
+    due.submitDate.setStartingHours();
+    expect(due.submitDate.startingHours).to.equal(15);
+  });
+});
