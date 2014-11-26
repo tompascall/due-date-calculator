@@ -28,7 +28,7 @@ describe('Validation', function(){
     var startWorkingHours = 9;
     var endWorkingHours = 17;
     submitDate.setHours(10);
-    expect(due.checkWorkingHours(submitDate, startWorkingHours, endWorkingHours)).to.equal(true);
+    expect(due.checkSubmitDateInWorkingHours(submitDate, startWorkingHours, endWorkingHours)).to.equal(true);
   });
 
   it('should check that value of turnaroundTime is a whole number', function(){
@@ -46,7 +46,7 @@ describe('Validation', function(){
     var startWorkingHours = 9;
     var endWorkingHours = 17;
     submitDate.setHours(8);
-    expect(due.checkWorkingHours).withArgs(submitDate, startWorkingHours, endWorkingHours)
+    expect(due.checkSubmitDateInWorkingHours).withArgs(submitDate, startWorkingHours, endWorkingHours)
       .to.throwException('submitDate is not within working hours');
   });
 
@@ -66,7 +66,7 @@ describe('Validation', function(){
   it('should set submitDate property', function(){
     submitDate = new Date('December 24, 2014 18:00:00');
     due.setSubmitDate(submitDate);
-    expect(due.submitDate.getTime()).to.equal(submitDate.getTime());
+    expect(due.submitDate.date.getTime()).to.equal(submitDate.getTime());
   });
 
   it('should set TurnaroundTime property', function(){

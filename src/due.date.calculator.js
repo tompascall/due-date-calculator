@@ -3,13 +3,17 @@
 'use strict';
 
 var calc = {
-
+  startWorkingHours: 9,
+  endWorkingHours: 17
 };
 
 calc.DueDate = function(){
 
 };
 
+calc.SubmitDate = function(date){
+  this.date = date;
+};
 
 calc.DueDate.prototype.validateSubmitDate = function(submitDate){
   if (submitDate instanceof Date) {
@@ -18,7 +22,7 @@ calc.DueDate.prototype.validateSubmitDate = function(submitDate){
   else throw new Error('submitDate is not a Date object');
 };
 
-calc.DueDate.prototype.checkWorkingHours = function(submitDate, startWorkingHours, endWorkingHours){
+calc.DueDate.prototype.checkSubmitDateInWorkingHours = function(submitDate, startWorkingHours, endWorkingHours){
   if (submitDate.getHours() >= startWorkingHours && submitDate.getHours() <= endWorkingHours) {
     return true;
   }
@@ -39,7 +43,7 @@ calc.DueDate.prototype.copyDate = function(source, dest){
 calc.DueDate.prototype.setSubmitDate = function(submitDate){
   var date = new Date();
   this.copyDate(submitDate, date);
-  this.submitDate = date;
+  this.submitDate = new calc.SubmitDate(date);
 };
 
 calc.DueDate.prototype.setTurnaroundTime = function(turnaroundTime){
@@ -47,7 +51,8 @@ calc.DueDate.prototype.setTurnaroundTime = function(turnaroundTime){
 };
 
 calc.DueDate.prototype.init = function(submitDate, turnaroundTime){
-  if (this.validateSubmitDate(submitDate) && this.checkWorkingHours(submitDate)){
+  if (this.validateSubmitDate(submitDate) &&
+    this.checkSubmitDateInWorkingHours(submitDate, calc.startWorkingHours, calc.endWorkingHours)){
     this.setSubmitDate(submitDate);
   }
   if (this.validateTurnaroundTime(turnaroundTime)) this.setTurnaroundTime(turnaroundTime);
@@ -55,6 +60,10 @@ calc.DueDate.prototype.init = function(submitDate, turnaroundTime){
 
 calc.DueDate.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   this.init(submitDate, turnaroundTime);
+};
+
+calc.SubmitDate.prototype.setStartingHours = function(){
+  this.startingHours = this.date.getHours();
 };
 
 module.exports = calc;
