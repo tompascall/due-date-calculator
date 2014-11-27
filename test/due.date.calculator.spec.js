@@ -92,7 +92,7 @@ describe('Calculate the number of hours to due date', function(){
     expect(due.submitDate.startingHours).to.equal(15);
   });
 
-  it('should get distance of hours to due date if turnaround time <= 8', function(){
+  it('should get distance of the nth working hour if n<=8', function(){
     submitDate = new Date('December 5, 2014 15:05:00');
     turnaroundTime = 2;
     var distance = turnaroundTime;
@@ -111,6 +111,5 @@ describe('Calculate the number of hours to due date', function(){
     due.init(submitDate, turnaroundTime);
     expect(due.distanceOfNextWorkingHour(distance)).to.equal(8);
   });
-
 
 });
