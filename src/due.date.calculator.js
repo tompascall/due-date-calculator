@@ -64,32 +64,23 @@ calc.DueDate.prototype.calculateDueDate = function(submitDate, turnaroundTime){
   this.init(submitDate, turnaroundTime);
 };
 
-calc.SubmitDate.prototype.setRemainingHours = function(){
-  if (this.date.getMinutes() === 0) {
-    this.remainingHours = calc.endWorkingHours - this.startingHours;
-  }
-  else {
-    this.remainingHours = calc.endWorkingHours - this.startingHours - 1;
-  }
-};
-
-calc.DueDate.prototype.checkSaturday = function(distance){
+calc.DueDate.prototype.distanceOfNextWorkingHour = function(distance){
   var date = new Date();
   this.copyDate(this.submitDate.date, date);
   date.setHours(date.getHours() + distance);
-  return date.getDay() === 6; // Saturday
+  if (date.getHours() > calc.endWorkingHours) {
+    distance += 24 - (calc.endWorkingHours - calc.startingHours) - 1;
+    date.setHours(date.getHours() + distance);
+  }
+  else if ((date.getHours() === calc.endWorkingHours) && date.getMinutes() !== 0){
+    distance += 24 - (calc.endWorkingHours - calc.startWorkingHours);
+    date.setHours(date.getHours() + distance);
+  }
+  if (date.getDay() === 6) {
+    distance += 48;
+  }
+  return distance;
 };
 
-calc.DueDate.prototype.distInHours = function(startingHours, turnaroundTime, distance){
-  var remainHours = calc.endWorkingHours - startingHours;
-  if (remainHours >= turnaroundTime) return turnaroundTime + (distance || 0);
-//   distance += remainHours + 1 + calc.timeOfRest;
-//   turnaroundTime -= (remainHours + 1);
-//   if (this.checkSaturday(distance)){
-//     distance += 48;
-//   }
-//   if (turnaroundTime === 0) return distance;
-//   return this.distInHours(calc.startingHours, turnaroundTime, distance);
-};
 
 module.exports = calc;

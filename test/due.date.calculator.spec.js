@@ -92,36 +92,25 @@ describe('Calculate the number of hours to due date', function(){
     expect(due.submitDate.startingHours).to.equal(15);
   });
 
-  it('should set remaining hours on submit day', function(){
+  it('should get distance of hours to due date if turnaround time <= 8', function(){
     submitDate = new Date('December 5, 2014 15:05:00');
     turnaroundTime = 2;
+    var distance = turnaroundTime;
     due.init(submitDate, turnaroundTime);
-    due.submitDate.setRemainingHours();
-    expect(due.submitDate.remainingHours).to.equal(1);
+    expect(due.distanceOfNextWorkingHour(distance)).to.equal(66);
+
+    submitDate = new Date('December 5, 2014 9:05:00');
+    turnaroundTime = 8;
+    distance = turnaroundTime;
+    due.init(submitDate, turnaroundTime);
+    expect(due.distanceOfNextWorkingHour(distance)).to.equal(72);
+
+    submitDate = new Date('December 5, 2014 9:00:00');
+    turnaroundTime = 8;
+    distance = turnaroundTime;
+    due.init(submitDate, turnaroundTime);
+    expect(due.distanceOfNextWorkingHour(distance)).to.equal(8);
   });
 
-  it('should get distance of hours to due date if there is enough time in submit day', function(){
-    submitDate = new Date('December 5, 2014 9:05:00');
-    turnaroundTime = 7;
-    due.init(submitDate, turnaroundTime);
-    due.submitDate.setRemainingHours();
-    var startingHours = 9;
-    expect(due.distInHours(startingHours, turnaroundTime)).to.equal(7);
-  });
 
-  it('should check if a day if Saturday by the distance from submit date', function(){
-    submitDate = new Date('December 5, 2014 9:05:00');
-    var distance = 24;
-    due.init(submitDate, turnaroundTime);
-    expect(due.checkSaturday(distance)).to.equal(true);
-  });
-  // it('should get distance of hours to due date if there is not enough time in submit day', function(){
-  //   submitDate = new Date('December 5, 2014 9:05:00');
-  //   turnaroundTime = 10;
-  //   due.init(submitDate, turnaroundTime);
-  //   due.submitDate.setRemainingHours();
-  //   var startingHours = 9;
-  //   var distance = 0;
-  //   expect(due.distInHours(startingHours, turnaroundTime, distance)).to.equal(58);
-  // });
 });
