@@ -85,31 +85,43 @@ describe('Calculate the number of hours to due date', function(){
     due = new calc.DueDate();
   });
 
-  it('should set starting hours of submitDate', function(){
-    submitDate = new Date('December 24, 2014 15:05:00');
-    turnaroundTime = 2;
-    due.init(submitDate, turnaroundTime);
-    expect(due.submitDate.startingHours).to.equal(15);
-  });
-
-  it('should get distance of the nth working hour if n<=8', function(){
+  it('should get distance of the nth working hour if n <= 8', function(){
     submitDate = new Date('December 5, 2014 15:05:00');
     turnaroundTime = 2;
-    var distance = turnaroundTime;
+    var currentDistance = 1;
     due.init(submitDate, turnaroundTime);
-    expect(due.distanceOfNextWorkingHour(distance)).to.equal(66);
+    expect(due.distanceOfNextWorkingHour(currentDistance)).to.equal(66);
 
     submitDate = new Date('December 5, 2014 9:05:00');
     turnaroundTime = 8;
-    distance = turnaroundTime;
+    currentDistance = 7;
     due.init(submitDate, turnaroundTime);
-    expect(due.distanceOfNextWorkingHour(distance)).to.equal(72);
+    expect(due.distanceOfNextWorkingHour(currentDistance)).to.equal(72);
 
     submitDate = new Date('December 5, 2014 9:00:00');
     turnaroundTime = 8;
-    distance = turnaroundTime;
+    currentDistance = 7;
     due.init(submitDate, turnaroundTime);
-    expect(due.distanceOfNextWorkingHour(distance)).to.equal(8);
+    expect(due.distanceOfNextWorkingHour(currentDistance)).to.equal(8);
   });
 
+  it('should get due date', function(){
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 19;
+    var testDate = new Date('December 10, 2014 10:05:00');
+    var dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 5, 2014 15:00:00');
+    turnaroundTime = 2;
+    testDate = new Date('December 5, 2014 17:00:00');
+    dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 19 + 40;
+    testDate = new Date('December 17, 2014 10:05:00');
+    dueDate = due.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
 });

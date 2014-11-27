@@ -5,7 +5,6 @@
 var calc = {
   startWorkingHours: 9,
   endWorkingHours: 17,
-  timeOfRest: 16 //24 - (this.endWorkingHours - this.startingHours)
 };
 
 calc.DueDate = function(){
@@ -14,7 +13,6 @@ calc.DueDate = function(){
 
 calc.SubmitDate = function(date){
   this.date = date;
-  this.startingHours = this.date.getHours();
 };
 
 calc.DueDate.prototype.validateSubmitDate = function(submitDate){
@@ -60,13 +58,10 @@ calc.DueDate.prototype.init = function(submitDate, turnaroundTime){
   if (this.validateTurnaroundTime(turnaroundTime)) this.setTurnaroundTime(turnaroundTime);
 };
 
-calc.DueDate.prototype.calculateDueDate = function(submitDate, turnaroundTime){
-  this.init(submitDate, turnaroundTime);
-};
-
 calc.DueDate.prototype.distanceOfNextWorkingHour = function(distance){
   var date = new Date();
   this.copyDate(this.submitDate.date, date);
+  distance++;
   date.setHours(date.getHours() + distance);
   if (date.getHours() > calc.endWorkingHours) {
     distance += 24 - (calc.endWorkingHours - calc.startingHours) - 1;
@@ -82,5 +77,16 @@ calc.DueDate.prototype.distanceOfNextWorkingHour = function(distance){
   return distance;
 };
 
+calc.DueDate.prototype.calculateDueDate = function(submitDate, turnaroundTime){
+  this.init(submitDate, turnaroundTime);
+  var distance = 0;
+  for (var i = 0; i < turnaroundTime; i++) {
+    distance = this.distanceOfNextWorkingHour(distance);
+  }
+  var dueDate = new Date();
+  this.copyDate(this.submitDate.date, dueDate);
+  dueDate.setHours(dueDate.getHours() + distance);
+  return dueDate;
+};
 
 module.exports = calc;
