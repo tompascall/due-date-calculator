@@ -6,8 +6,12 @@ var expect = require('expect.js');
 var calc = require('../src/due.date.calculator.js');
 
 describe('due date calculation', function(){
-  var timeFrames = {
-    restingHours : function(date){
+  function timeFrames(date){
+    restingHours(date);
+    weekend(date);
+    return date;
+
+    function restingHours(date){
       var startWorkingHours = 9;
       var endWorkingHours = 17;
       var endWorkingDate = getEndworkingDate(date, new Date());
@@ -23,15 +27,15 @@ describe('due date calculation', function(){
         endWorkingDate.setHours(endWorkingHours, 0, 0, 0);
         return endWorkingDate;
       }
-    },
-    weekend : function(date){
+    }
+    function weekend(date){
       var saturday = 6;
       if (date.getDay() === saturday){
         date.setDate(date.getDate() + 2);
       }
       return date;
     }
-  };
+  }
 
   it('should get back submit day if turnaround time = 0', function(){
     var submitDate = new Date('December 5, 2014 15:15:30');
