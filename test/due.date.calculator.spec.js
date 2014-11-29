@@ -10,17 +10,24 @@ describe('due date calculation', function(){
     restingHours : function(date){
       var startWorkingHours = 9;
       var endWorkingHours = 17;
-      if ((date.getHours() > endWorkingHours) ||
-        (date.getHours() === endWorkingHours && date.getTime() !== 0)){
-        date.setDate(date.getDate() + 1);
-        date.setHours(startWorkingHours);
+      var endWorkingDate = getEndworkingDate(date, new Date());
+
+      var diff = date.getTime() - endWorkingDate.getTime();
+      if (diff > 0) {
+        date.setHours(date.getHours() + (24 - endWorkingHours + startWorkingHours));
       }
       return date;
+
+      function getEndworkingDate(date, endWorkingDate){
+        endWorkingDate.setTime(date.getTime());
+        endWorkingDate.setHours(endWorkingHours, 0, 0, 0);
+        return endWorkingDate;
+      }
     },
     weekend : function(date){
       var saturday = 6;
-      if (date.getDay === saturday){
-        date.setDate(date.getDate + 2);
+      if (date.getDay() === saturday){
+        date.setDate(date.getDate() + 2);
       }
       return date;
     }
@@ -31,5 +38,33 @@ describe('due date calculation', function(){
     var turnaroundTime = 0;
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     expect(dueDate.getTime()).to.equal(submitDate.getTime());
+  });
+
+  it('should add turnaround time to submit date', function(){
+    var submitDate = new Date('December 5, 2014 15:00:00');
+    var turnaroundTime = 2;
+    var testDate = new Date('December 5, 2014 17:00:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+
+  it('should count dueDate', function(){
+    var submitDate = new Date('December 5, 2014 15:00:00');
+    var turnaroundTime = 3;
+    var testDate = new Date('December 8, 2014 10:00:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 3;
+    testDate = new Date('December 8, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 19;
+    testDate = new Date('December 10, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
   });
 });
