@@ -5,38 +5,38 @@
 var expect = require('expect.js');
 var calc = require('../src/due.date.calculator.js');
 
-describe('due date calculation', function(){
-  function timeFrames(date){
-    restingHours(date);
-    weekend(date);
+function timeFrames(date){
+  restingHours(date);
+  weekend(date);
+  return date;
+
+  function restingHours(date){
+    var startWorkingHours = 9;
+    var endWorkingHours = 17;
+    var endWorkingDate = getEndworkingDate(date, new Date());
+
+    var diff = date.getTime() - endWorkingDate.getTime();
+    if (diff > 0) {
+      date.setHours(date.getHours() + (24 - endWorkingHours + startWorkingHours));
+    }
     return date;
 
-    function restingHours(date){
-      var startWorkingHours = 9;
-      var endWorkingHours = 17;
-      var endWorkingDate = getEndworkingDate(date, new Date());
-
-      var diff = date.getTime() - endWorkingDate.getTime();
-      if (diff > 0) {
-        date.setHours(date.getHours() + (24 - endWorkingHours + startWorkingHours));
-      }
-      return date;
-
-      function getEndworkingDate(date, endWorkingDate){
-        endWorkingDate.setTime(date.getTime());
-        endWorkingDate.setHours(endWorkingHours, 0, 0, 0);
-        return endWorkingDate;
-      }
-    }
-    function weekend(date){
-      var saturday = 6;
-      if (date.getDay() === saturday){
-        date.setDate(date.getDate() + 2);
-      }
-      return date;
+    function getEndworkingDate(date, endWorkingDate){
+      endWorkingDate.setTime(date.getTime());
+      endWorkingDate.setHours(endWorkingHours, 0, 0, 0);
+      return endWorkingDate;
     }
   }
+  function weekend(date){
+    var saturday = 6;
+    if (date.getDay() === saturday){
+      date.setDate(date.getDate() + 2);
+    }
+    return date;
+  }
+}
 
+describe('due date calculation', function(){
   it('should get back submit day if turnaround time = 0', function(){
     var submitDate = new Date('December 5, 2014 15:15:30');
     var turnaroundTime = 0;
