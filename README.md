@@ -4,12 +4,12 @@ This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames
 
 - A submisson can only be during a non time-frame period
 - `turnaroundTime` argument must be given in hours
-- `timeFrames` is an array, that contains time frame objects. For the moment there are 3 types of time frames, you can distinct them by the unit of the frame. **If the unit is**
+- `timeFrames` argument is an array, that contains time frame objects. For the moment there are 3 types of time frames, you can distinct them by the unit of the frame. **If the unit is**
   - **`dayOfWeek`**, you can give a starting day of the week, and the length of the frame in milliseconds. If you give a time frame like this, you have this timeframe every week
   - **`restingHours`**, you can give a starting hour, and the length of the frame in milliseconds. If you give a time frame like this, you have this timeframe every day
   - **`date`**, you can give a term by a date string and a length. This frame is not a regular one.
 
-The unit of the calculation is **hour**, it means that we scan the length of `turnaroundTime` per hour, and if we clash with a time frame, we jump over the frame and continue scanning.
+When we calculate due date, we count the elapsed time between time frames. The unit of the calculation is in **hour**. It means that we scan the length of `turnaroundTime` per hour, and if we clash with a time frame, we jump over the frame and continue scanning.
 
 The time frame object has a `priority` property. It sets that what order we check time frames if a moment is in a frame or not. This can be important if the frames overlaying each other, in this case you have to set the priority properly.
 
@@ -18,7 +18,8 @@ The `name` key of the timeFrame object is just informative, it is not necessary 
 For example
 
 ```js
-timeFrames = [
+var msInHour = 60 * 60 * 1000;
+var timeFrames = [
   {
     name : 'weekend',
     unit : 'dayOfWeek',
@@ -44,11 +45,9 @@ timeFrames = [
 ```
 
 With these set of objects we create the following time frames:
-- we have a 2 days long frame from December 22, 2014 to December 24, 2014,
+- we have a 2 days long frame from December 22, 2014 to December 24, 2014
 - we have a 16 hours long frame per every day from 17 to 9,
 - we have a 2 days long frame per every week from Saturday to Sunday
-
-When we calculate due date, we count the elapsed time between time frames.
 
 #####Using `calculateDueDate()` method
 
