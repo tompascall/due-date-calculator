@@ -16,19 +16,42 @@ calc.HandleFrames.prototype.compare = function(a, b){
   if (a.priority > b.priority) return 1; // sort time frames by priority
 };
 
+calc.HandleFrames.prototype.setDay = function(date, day) {
+  date.setDate(date.getDate() - date.getDay() + day);
+};
+
+calc.HandleFrames.prototype.setStartDate = function(startDate, frame){
+  switch(frame.unit){
+    case 'hour':
+      startDate.setHours(frame.start);
+      break;
+    case 'dayOfWeek':
+      this.setDay(startDate, frame.start);
+      startDate.setHours(0);
+      break;
+    default:
+      throw new Error('invalid frame unit');
+  }
+};
+
+calc.HandleFrames.prototype.setEndDate = function(startDate, endDate, frame) {
+  endDate.setTime(startDate.getTime() + frame.length);
+};
+
 calc.HandleFrames.prototype.isInFrame = function(frame, date){
   var startDate = new Date();
   var endDate = new Date();
   calc.copyDate(date, startDate);
   calc.copyDate(date, endDate);
-  if (frame.unit === 'hour') {
-    startDate.setHours(frame.start);
-    endDate.setTime(startDate.getTime() + frame.length);
-    if (date.getTime() > startDate.getTime() &&
-      date.getTime() < endDate.getTime()) {
-      return true;
-    }
+
+  this.setStartDate(startDate, frame);
+  this.setEndDate(startDate, endDate, frame);
+
+  if (date.getTime() > startDate.getTime() &&
+    date.getTime() < endDate.getTime()) {
+    return true;
   }
+  else return false;
 };
 
 calc.HandleFrames.prototype.setDateAFterFrame = function(date, frame){
@@ -36,8 +59,10 @@ calc.HandleFrames.prototype.setDateAFterFrame = function(date, frame){
 };
 
 calc.HandleFrames.prototype.nextDate = function(date){
-  if (this.isInFrame(this.timeFrames[0], date)) {
-    this.setDateAFterFrame(date, this.timeFrames[0]);
+  for (var i = 0; i < this.timeFrames.length; i++) {
+    if (this.isInFrame(this.timeFrames[i], date)) {
+      this.setDateAFterFrame(date, this.timeFrames[i]);
+    }
   }
   return date;
 };
