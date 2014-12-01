@@ -58,6 +58,13 @@ calc.HandleFrames.prototype.isInFrame = function(frame, date){
   else return false;
 };
 
+calc.HandleFrames.prototype.getDateTime = function(date){
+  var baseDate = new Date();
+  calc.copyDate(date, baseDate);
+  baseDate.setHours(0, 0, 0, 0);
+  return date.getTime() - baseDate.getTime();
+};
+
 calc.HandleFrames.prototype.setDateAFterFrame = function(date, frame){
   date.setTime(date.getTime() + frame.length);
 };
