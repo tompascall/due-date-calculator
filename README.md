@@ -1,16 +1,43 @@
 ###Due Date Calculator
 
-This project represents `calculateDueDate(submitDate, turnaroundTime)` method for calculating due date, folowing the rules below:
+This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames)` method for calculating due date, folowing the rules below:
 
-- Working hours are 9AM to 5PM every working day (Monday through Friday)
-- The program does not deal with holidays, which means that a holiday on a Thursday is still considered as a working day. Also a working Saturday will still be considered as a nonworking day
-- `turnaroundTime` argument must be given in working hours, which means for example that 2 days are 16 hours. As an example: if a problem was reported at 2:12PM on Tuesday then it is due by 2:12PM on Thursday.
-- A submisson can only be during working hours, which means that all submit date values fall between 9AM and 5PM.
+- A submisson can only be during non time-frame period
+- `turnaroundTime` argument must be given in hours
+- `timeFrames` is an array, that contains time frame objects as following:
+
+```js
+timeFrames = [
+  {
+    name : 'weekend',
+    unit : 'dayOfWeek',
+    start : 6,  // Saturday
+    length : 2 * 24 * msInHour,
+    priority : 3000 // the higher the number the lower the priority
+  },
+  {
+    name : 'restingHours',
+    unit : 'hour',
+    start : 17,
+    length : 16 * msInHour,
+    priority : 2000
+  },
+  {
+    name : 'holiday',
+    unit : 'date',
+    start : 'December 22, 2014 00:00:00',
+    length : 2 * 24 * msInHour,
+    priority : 1000
+  }
+];
+```
+
+The `name` key is just informative, you can leave them.
 
 The `calculateDueDate()` method gives back a **Date() object**. It is a method of `calc` object:
 
 ```js
-var dueDate = calc.calculateDueDate(submitDate, turnaroundTime);
+var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
 ```
 
 ####Prerequisities for development

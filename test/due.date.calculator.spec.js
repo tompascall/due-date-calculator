@@ -9,7 +9,6 @@ var timeFrames = [
   {
     name : 'weekend',
     unit : 'dayOfWeek',
-    regularity : 'week',
     start : 6,  // Saturday
     length : 2 * 24 * msInHour,
     priority : 3000 // the higher the number the lower the priority
@@ -17,7 +16,6 @@ var timeFrames = [
   {
     name : 'restingHours',
     unit : 'hour',
-    regularity : 'day',
     start : 17,
     length : 16 * msInHour,
     priority : 2000
@@ -25,13 +23,11 @@ var timeFrames = [
   {
     name : 'holiday',
     unit : 'date',
-    regularity : 'none',
     start : 'December 22, 2014 00:00:00',
     length : 2 * 24 * msInHour,
     priority : 1000
   }
 ];
-
 
 describe('due date calculation', function(){
   var submitDate;
