@@ -12,7 +12,7 @@ var timeFrames = [
     regularity : 'week',
     start : 6,  // Saturday
     length : 2 * 24 * msInHour,
-    priority : 2000
+    priority : 3000 // the higher the number the lower the priority
   },
   {
     name : 'restingHours',
@@ -20,6 +20,14 @@ var timeFrames = [
     regularity : 'day',
     start : 17,
     length : 16 * msInHour,
+    priority : 2000
+  },
+  {
+    name : 'holiday',
+    unit : 'date',
+    regularity : 'none',
+    start : 'December 22, 2014 00:00:00',
+    length : 2 * 24 * msInHour,
     priority : 1000
   }
 ];
@@ -64,6 +72,20 @@ describe('due date calculation', function(){
     submitDate = new Date('December 5, 2014 15:05:00');
     turnaroundTime = 3;
     testDate = new Date('December 8, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 19;
+    testDate = new Date('December 10, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+
+  it('should handle frames which have date unit', function(){
+    submitDate = new Date('December 5, 2014 15:05:00');
+    turnaroundTime = 19 + 8 * 10; // + 2 weeks
+    testDate = new Date('December 26, 2014 10:05:00');
     dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     expect(dueDate.getTime()).to.equal(testDate.getTime());
   });

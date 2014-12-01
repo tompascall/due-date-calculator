@@ -29,13 +29,18 @@ calc.HandleFrames.prototype.setStartDate = function(startDate, frame){
       this.setDay(startDate, frame.start);
       startDate.setHours(0);
       break;
+    case 'date':
+      startDate = new Date(frame.start);
+      break;
     default:
       throw new Error('invalid frame unit');
   }
+  return startDate;
 };
 
 calc.HandleFrames.prototype.setEndDate = function(startDate, endDate, frame) {
   endDate.setTime(startDate.getTime() + frame.length);
+  return endDate;
 };
 
 calc.HandleFrames.prototype.isInFrame = function(frame, date){
@@ -44,9 +49,8 @@ calc.HandleFrames.prototype.isInFrame = function(frame, date){
   calc.copyDate(date, startDate);
   calc.copyDate(date, endDate);
 
-  this.setStartDate(startDate, frame);
-  this.setEndDate(startDate, endDate, frame);
-
+  startDate = this.setStartDate(startDate, frame);
+  endDate = this.setEndDate(startDate, endDate, frame);
   if (date.getTime() > startDate.getTime() &&
     date.getTime() < endDate.getTime()) {
     return true;
