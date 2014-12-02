@@ -37,7 +37,12 @@ calc.Frame.prototype.setDay = function(date, day) {
 calc.Frame.prototype.setStartDate = function(startDate, frame){
   switch(frame.unit){
     case 'hour':
-      startDate.setHours(frame.start);
+      if (startDate.getHours() <= frame.start) {
+        startDate.setHours(frame.start - 24);
+      }
+      else {
+        startDate.setHours(frame.start);
+      }
       break;
     case 'dayOfWeek':
       this.setDay(startDate, frame.start);
@@ -94,16 +99,21 @@ calc.HandleFrames.prototype.getSwagLength = function(frame, date){
 calc.HandleFrames.prototype.improveStrip = function(date){
   var frame;
   var frameDates;
-
-  for (var i = 0; i < this.timeFrames.length; i++) {
+  var i = 0;
+  do {
+  //for (var i = 0; i < this.timeFrames.length; i++) {
     frame = this.timeFrames[i];
     frameDates = this.isInFrame(frame, date);
     if (frameDates) {
       this.swags += this.getSwagLength(frameDates, date);
       date.setTime(frameDates.endDate.getTime());
-      this.improveStrip(date);
+      i = 0;
+    }
+    else {
+      i++;
     }
   }
+  while (i < this.timeFrames.length);
 };
 
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
