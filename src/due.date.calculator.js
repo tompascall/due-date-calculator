@@ -8,25 +8,33 @@ calc.copyDate = function(src, dest){
   dest.setTime(src.getTime());
 };
 
-calc.Term = function(startDate, endDate, type){
-  this.startDate = startDate;
-  this.endDate = endDate;
-  this.type = (type || 'noFrame');
-};
 
-calc.HandleFrames = function(timeFrames){
+calc.HandleFrames = function(submitDate, timeFrames){
+ this.submitDate = calc.copyDate(submitDate, new Date());
  this.timeFrames = timeFrames.sort(this.compare);
+ this.strip = [];
+ this.swags = 0;
 };
 
 calc.HandleFrames.prototype.compare = function(a, b){
   if (a.priority > b.priority) return 1; // sort time frames by priority
 };
 
-calc.HandleFrames.prototype.setDay = function(date, day) {
+calc.Frame = function(frame, date){
+  var startDate = new Date();
+  var endDate = new Date();
+  calc.copyDate(date, startDate);
+  calc.copyDate(date, endDate);
+
+  this.startDate = this.setStartDate(startDate, frame);
+  this.endDate = this.setEndDate(startDate, endDate, frame);
+};
+
+calc.Frame.prototype.setDay = function(date, day) {
   date.setDate(date.getDate() - date.getDay() + day);
 };
 
-calc.HandleFrames.prototype.setStartDate = function(startDate, frame){
+calc.Frame.prototype.setStartDate = function(startDate, frame){
   switch(frame.unit){
     case 'hour':
       startDate.setHours(frame.start);
@@ -44,22 +52,17 @@ calc.HandleFrames.prototype.setStartDate = function(startDate, frame){
   return startDate;
 };
 
-calc.HandleFrames.prototype.setEndDate = function(startDate, endDate, frame) {
+calc.Frame.prototype.setEndDate = function(startDate, endDate, frame) {
   endDate.setTime(startDate.getTime() + frame.length);
   return endDate;
 };
 
 calc.HandleFrames.prototype.isInFrame = function(frame, date){
-  var startDate = new Date();
-  var endDate = new Date();
-  calc.copyDate(date, startDate);
-  calc.copyDate(date, endDate);
+  var frameDates = new calc.Frame(frame, date);
 
-  startDate = this.setStartDate(startDate, frame);
-  endDate = this.setEndDate(startDate, endDate, frame);
-  if (date.getTime() > startDate.getTime() &&
-    date.getTime() < endDate.getTime()) {
-    return true;
+  if (date.getTime() > frameDates.startDate.getTime() &&
+    date.getTime() < frameDates.endDate.getTime()) {
+    return frameDates;
   }
   else return false;
 };
@@ -84,14 +87,36 @@ calc.HandleFrames.prototype.nextDate = function(date){
   return date;
 };
 
+calc.HandleFrames.prototype.getSwagLength = function(frame, date){
+  return date.getTime() - frame.startDate.getTime();
+};
+
+calc.HandleFrames.prototype.improveStrip = function(date){
+  var frame;
+  var frameDates;
+
+  for (var i = 0; i < this.timeFrames.length; i++) {
+    frame = this.timeFrames[i];
+    frameDates = this.isInFrame(frame, date);
+    if (frameDates) {
+      this.swags += this.getSwagLength(frameDates, date);
+      date.setTime(frameDates.endDate.getTime());
+      this.improveStrip(date);
+    }
+  }
+};
+
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   var dueDate = new Date();
   this.copyDate(submitDate, dueDate);
   if (turnaroundTime === 0) return dueDate;
-  var handleFrames = new calc.HandleFrames(timeFrames);
+  var handleFrames = new calc.HandleFrames(submitDate, timeFrames);
   for (var i = 0; i < turnaroundTime; i++){
     dueDate.setHours(dueDate.getHours() + 1); // step to next hour
-    //dueDate = handleFrames.nextDate(dueDate);
+    handleFrames.improveStrip(dueDate);
+  }
+  if (handleFrames.swags > 0) {
+    dueDate.setTime(dueDate.getTime() + handleFrames.swags);
   }
   return dueDate;
 };
