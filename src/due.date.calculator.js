@@ -100,13 +100,18 @@ calc.HandleFrames.prototype.improveStrip = function(date){
   var frame;
   var frameDates;
   var i = 0;
+  var firstFrame = true;
+
   do {
-  //for (var i = 0; i < this.timeFrames.length; i++) {
     frame = this.timeFrames[i];
+    console.log('frame: ' + frame.name);
     frameDates = this.isInFrame(frame, date);
     if (frameDates) {
-      this.swags += this.getSwagLength(frameDates, date);
+      if (firstFrame) this.swags += this.getSwagLength(frameDates, date);
+      firstFrame = false;
+      console.log('improve ' + this.swags);
       date.setTime(frameDates.endDate.getTime());
+      console.log('endDate: ' + date.toString());
       i = 0;
     }
     else {
@@ -124,6 +129,8 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   for (var i = 0; i < turnaroundTime; i++){
     dueDate.setHours(dueDate.getHours() + 1); // step to next hour
     handleFrames.improveStrip(dueDate);
+    console.log('dueDate: ' + dueDate.toString());
+    console.log('swags: ' + i + '. :' + handleFrames.swags / 1000 / 60 / 60);
   }
   if (handleFrames.swags > 0) {
     dueDate.setTime(dueDate.getTime() + handleFrames.swags);
