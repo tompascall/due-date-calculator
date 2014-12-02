@@ -8,6 +8,12 @@ calc.copyDate = function(src, dest){
   dest.setTime(src.getTime());
 };
 
+calc.Term = function(startDate, endDate, type){
+  this.startDate = startDate;
+  this.endDate = endDate;
+  this.type = (type || 'noFrame');
+};
+
 calc.HandleFrames = function(timeFrames){
  this.timeFrames = timeFrames.sort(this.compare);
 };
@@ -85,7 +91,7 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   var handleFrames = new calc.HandleFrames(timeFrames);
   for (var i = 0; i < turnaroundTime; i++){
     dueDate.setHours(dueDate.getHours() + 1); // step to next hour
-    dueDate = handleFrames.nextDate(dueDate);
+    //dueDate = handleFrames.nextDate(dueDate);
   }
   return dueDate;
 };
