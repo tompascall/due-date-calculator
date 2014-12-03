@@ -11,13 +11,8 @@ calc.copyDate = function(src, dest){
 
 calc.HandleFrames = function(submitDate, timeFrames){
  this.submitDate = calc.copyDate(submitDate, new Date());
- this.timeFrames = timeFrames.sort(this.compare);
- this.strip = [];
+ this.timeFrames = timeFrames;
  this.swags = 0;
-};
-
-calc.HandleFrames.prototype.compare = function(a, b){
-  if (a.priority > b.priority) return 1; // sort time frames by priority
 };
 
 calc.Frame = function(frame, date){
@@ -31,7 +26,12 @@ calc.Frame = function(frame, date){
 };
 
 calc.Frame.prototype.setDay = function(date, day) {
-  date.setDate(date.getDate() - date.getDay() + day);
+  if (date.getDay() !== 0) {
+    date.setDate(date.getDate() - date.getDay() + day);
+  }
+  else {
+    date.setDate(date.getDate() - 7 + day);
+  }
 };
 
 calc.Frame.prototype.setStartDate = function(startDate, frame){
@@ -83,26 +83,6 @@ calc.HandleFrames.prototype.isInFrame = function(frame, date){
     return frameDates;
   }
   else return false;
-};
-
-calc.HandleFrames.prototype.getDateTime = function(date){
-  var baseDate = new Date();
-  calc.copyDate(date, baseDate);
-  baseDate.setHours(0, 0, 0, 0);
-  return date.getTime() - baseDate.getTime();
-};
-
-calc.HandleFrames.prototype.setDateAFterFrame = function(date, frame){
-  date.setTime(date.getTime() + frame.length);
-};
-
-calc.HandleFrames.prototype.nextDate = function(date){
-  for (var i = 0; i < this.timeFrames.length; i++) {
-    if (this.isInFrame(this.timeFrames[i], date)) {
-      this.setDateAFterFrame(date, this.timeFrames[i]);
-    }
-  }
-  return date;
 };
 
 calc.HandleFrames.prototype.getSwagLength = function(frame, date){

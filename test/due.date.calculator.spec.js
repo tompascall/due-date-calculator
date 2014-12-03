@@ -16,22 +16,19 @@ describe('due date calculation', function(){
       name : 'weekend',
       unit : 'dayOfWeek',
       start : 6,  // Saturday
-      length : 2 * 24 * msInHour,
-      priority : 3000 // the higher the number the lower the priority
+      length : 2 * 24 * msInHour
     },
     {
       name : 'restingHours',
       unit : 'hour',
       start : 17,
-      length : 16 * msInHour,
-      priority : 2000
+      length : 16 * msInHour
     },
     {
       name : 'holiday',
       unit : 'date',
       start : 'December 22, 2014 00:00:00',
-      length : 2 * 24 * msInHour,
-      priority : 1000
+      length : 2 * 24 * msInHour
     }
   ];
 
@@ -92,27 +89,127 @@ describe('test two hour-type time frames', function(){
   var turnaroundTime;
   var dueDate;
   var testDate;
-  var timeFrames = [
-    {
-      name : 'restingHours',
-      unit : 'hour',
-      start : 17,
-      length : 16 * msInHour,
-      priority : 1000
-    },
-    {
-      name : 'lunchTime',
-      unit : 'hour',
-      start : 12,
-      length : 2 * msInHour,
-      priority : 2000
-    }
-  ];
 
-  it('should work with two hour-type frames', function(){
+
+  it('should work with two separated hour-type frames', function(){
+    var timeFrames = [
+      {
+        name : 'restingHours',
+        unit : 'hour',
+        start : 17,
+        length : 16 * msInHour,
+      },
+      {
+        name : 'lunchTime',
+        unit : 'hour',
+        start : 12,
+        length : 2 * msInHour,
+      }
+    ];
     submitDate = new Date('December 1, 2014 9:00:00');
     turnaroundTime = 10;
     testDate = new Date('December 2, 2014 15:00:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+
+  it('should work with two overlapped hour type frames', function(){
+    var timeFrames = [
+      {
+        name : 'restingHours',
+        unit : 'hour',
+        start : 17,
+        length : 16 * msInHour
+      },
+      {
+        name : 'lunchTime',
+        unit : 'hour',
+        start : 16,
+        length : 2 * msInHour
+      }
+    ];
+    submitDate = new Date('December 1, 2014 9:00:00');
+    turnaroundTime = 10;
+    testDate = new Date('December 2, 2014 12:00:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    submitDate = new Date('December 1, 2014 9:05:00');
+    turnaroundTime = 15;
+    testDate = new Date('December 3, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+
+    timeFrames = [
+      {
+        name : 'restingHours',
+        unit : 'hour',
+        start : 17,
+        length : 16 * msInHour
+      },
+      {
+        name : 'lunchTime',
+        unit : 'hour',
+        start : 6,
+        length : 2 * msInHour
+      }
+    ];
+
+    submitDate = new Date('December 1, 2014 9:05:00');
+    turnaroundTime = 10;
+    testDate = new Date('December 2, 2014 11:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+});
+
+describe('test dayOfWeek time frames', function(){
+  var submitDate;
+  var turnaroundTime;
+  var dueDate;
+  var testDate;
+  var timeFrames = [
+    {
+      name : 'weekend',
+      unit : 'dayOfWeek',
+      start : 6,  // Saturday
+      length : 2 * 24 * msInHour
+    },
+    {
+      name : 'Thursday',
+      unit : 'dayOfWeek',
+      start : 4,  // Thursday
+      length : 1 * 24 * msInHour
+    }
+  ];
+
+  it('should work with two separated dayOfWeek frames', function(){
+    submitDate = new Date('December 1, 2014 9:05:00');
+    turnaroundTime = 5 * 24;
+    testDate = new Date('December 9, 2014 9:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+
+  it('should work with two overlapped dayOfWeek frames', function(){
+    timeFrames = [
+      {
+        name : 'weekend',
+        unit : 'dayOfWeek',
+        start : 6,  // Saturday
+        length : 2 * 24 * msInHour
+      },
+      {
+        name : 'Thursday-Saturday',
+        unit : 'dayOfWeek',
+        start : 4,  // Thursday
+        length : 3 * 24 * msInHour
+      }
+    ];
+
+    submitDate = new Date('December 1, 2014 9:05:00');
+    turnaroundTime = 3 * 24;
+    testDate = new Date('December 8, 2014 9:05:00');
     dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     expect(dueDate.getTime()).to.equal(testDate.getTime());
   });
