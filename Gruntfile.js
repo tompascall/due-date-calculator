@@ -39,6 +39,10 @@ module.exports = function(grunt){
       config: [files.grunt]
     },
 
+    'node-inspector': {
+      dev: {}
+    },
+
     mochacli: {
       options: {
         files: [files.test],

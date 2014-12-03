@@ -27,7 +27,7 @@ calc.Frame = function(frame, date){
   calc.copyDate(date, endDate);
 
   this.startDate = this.setStartDate(startDate, frame);
-  this.endDate = this.setEndDate(startDate, endDate, frame);
+  this.endDate = this.setEndDate(endDate, frame);
 };
 
 calc.Frame.prototype.setDay = function(date, day) {
@@ -41,12 +41,12 @@ calc.Frame.prototype.setStartDate = function(startDate, frame){
         startDate.setHours(frame.start - 24);
       }
       else {
-        startDate.setHours(frame.start);
+        startDate.setHours(frame.start, 0, 0, 0);
       }
       break;
     case 'dayOfWeek':
       this.setDay(startDate, frame.start);
-      startDate.setHours(0);
+      startDate.setHours(0, 0, 0, 0);
       break;
     case 'date':
       startDate = new Date(frame.start);
@@ -57,8 +57,8 @@ calc.Frame.prototype.setStartDate = function(startDate, frame){
   return startDate;
 };
 
-calc.Frame.prototype.setEndDate = function(startDate, endDate, frame) {
-  endDate.setTime(startDate.getTime() + frame.length);
+calc.Frame.prototype.setEndDate = function(endDate, frame) {
+  endDate.setTime(this.startDate.getTime() + frame.length);
   return endDate;
 };
 
@@ -104,14 +104,13 @@ calc.HandleFrames.prototype.improveStrip = function(date){
 
   do {
     frame = this.timeFrames[i];
-    console.log('frame: ' + frame.name);
     frameDates = this.isInFrame(frame, date);
     if (frameDates) {
-      if (firstFrame) this.swags += this.getSwagLength(frameDates, date);
-      firstFrame = false;
-      console.log('improve ' + this.swags);
+      if (firstFrame) {
+        this.swags += this.getSwagLength(frameDates, date);
+        firstFrame = false;
+      }
       date.setTime(frameDates.endDate.getTime());
-      console.log('endDate: ' + date.toString());
       i = 0;
     }
     else {
@@ -123,18 +122,23 @@ calc.HandleFrames.prototype.improveStrip = function(date){
 
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   var dueDate = new Date();
+  var msInHour = 1000 * 60 * 60;
   this.copyDate(submitDate, dueDate);
   if (turnaroundTime === 0) return dueDate;
   var handleFrames = new calc.HandleFrames(submitDate, timeFrames);
   for (var i = 0; i < turnaroundTime; i++){
     dueDate.setHours(dueDate.getHours() + 1); // step to next hour
     handleFrames.improveStrip(dueDate);
-    console.log('dueDate: ' + dueDate.toString());
-    console.log('swags: ' + i + '. :' + handleFrames.swags / 1000 / 60 / 60);
   }
-  if (handleFrames.swags > 0) {
-    dueDate.setTime(dueDate.getTime() + handleFrames.swags);
+
+  while (Math.floor(handleFrames.swags / msInHour) > 0) {
+    handleFrames.swags -= msInHour;
+    dueDate.setHours(dueDate.getHours() + 1); // step to next hour
+    handleFrames.improveStrip(dueDate);
   }
+
+
+  dueDate.setTime(dueDate.getTime() + (handleFrames.swags % msInHour));
   return dueDate;
 };
 
