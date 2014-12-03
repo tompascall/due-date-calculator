@@ -65,9 +65,9 @@ describe('due date calculation', function(){
   });
 
   it('should get dueDate if we clash with weekend time frame', function(){
-    submitDate = new Date('December 5, 2014 15:05:00');
+    submitDate = new Date('December 5, 2014 15:00:00');
     turnaroundTime = 3;
-    testDate = new Date('December 8, 2014 10:05:00');
+    testDate = new Date('December 8, 2014 10:00:00');
     dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     expect(dueDate.getTime()).to.equal(testDate.getTime());
 
@@ -82,6 +82,37 @@ describe('due date calculation', function(){
     submitDate = new Date('December 5, 2014 15:05:00');
     turnaroundTime = 19 + 8 * 10; // + 2 weeks
     testDate = new Date('December 26, 2014 10:05:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    expect(dueDate.getTime()).to.equal(testDate.getTime());
+  });
+});
+
+describe('test two hour-type time frames', function(){
+  var submitDate;
+  var turnaroundTime;
+  var dueDate;
+  var testDate;
+  var timeFrames = [
+    {
+      name : 'restingHours',
+      unit : 'hour',
+      start : 17,
+      length : 16 * msInHour,
+      priority : 1000
+    },
+    {
+      name : 'lunchTime',
+      unit : 'hour',
+      start : 12,
+      length : 2 * msInHour,
+      priority : 2000
+    }
+  ];
+
+  it('should work with two hour-type frames', function(){
+    submitDate = new Date('December 1, 2014 9:00:00');
+    turnaroundTime = 10;
+    testDate = new Date('December 2, 2014 15:00:00');
     dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     expect(dueDate.getTime()).to.equal(testDate.getTime());
   });

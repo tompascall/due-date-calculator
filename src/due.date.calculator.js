@@ -35,14 +35,27 @@ calc.Frame.prototype.setDay = function(date, day) {
 };
 
 calc.Frame.prototype.setStartDate = function(startDate, frame){
+
   switch(frame.unit){
     case 'hour':
-      if (startDate.getHours() <= frame.start) {
-        startDate.setHours(frame.start - 24);
+      var testStartDate = new Date();
+      var testEndDate = new Date();
+      calc.copyDate(startDate, testStartDate);
+      calc.copyDate(startDate, testEndDate);
+
+      testStartDate.setHours(frame.start, 0, 0, 0);
+      testEndDate.setTime(testStartDate.getTime() + frame.length);
+
+      if (startDate.getTime() > testStartDate.getTime()) {
+        startDate = testStartDate;
       }
       else {
-        startDate.setHours(frame.start, 0, 0, 0);
+        testEndDate.setHours(testEndDate.getHours() - 24);
+        if (startDate.getTime() < testEndDate.getTime()) {
+          startDate.setHours(testStartDate.getHours() - 24);
+        }
       }
+
       break;
     case 'dayOfWeek':
       this.setDay(startDate, frame.start);
