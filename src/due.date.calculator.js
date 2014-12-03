@@ -29,7 +29,7 @@ calc.Frame.prototype.setDay = function(date, day) {
   if (date.getDay() !== 0) {
     date.setDate(date.getDate() - date.getDay() + day);
   }
-  else {
+  else if (day !== 0) {
     date.setDate(date.getDate() - 7 + day);
   }
 };
