@@ -5,17 +5,6 @@
 var expect = require('expect.js');
 var frames = require('../src/frames.js');
 
-function exMessage(message, func, param1, param2, param3){
-   try {
-      func(param1, param2, param3);
-    }
-    catch(e) {
-      expect(e.message).to.be(message);
-      return true;
-    }
-    return false;
-}
-
 describe('Validate frames', function(){
 
   it('should check if timeFrames parameter is an array', function(){
@@ -26,25 +15,71 @@ describe('Validate frames', function(){
   it('should throw exception ' +
     'if timeFrames parameter missing or not an array', function(){
     var timeFrames;
-    if (!exMessage('TimeFrames argument missing or not an array',
-      frames.validate, timeFrames)) {
+    var message = 'TimeFrames argument missing or not an array';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
 
   it('should check that all elements of the array is an object', function(){
-    var timeFrames = [{}, undefined];
-    if (!exMessage('Time frames must be objects',
-      frames.validate, timeFrames)) {
+    var timeFrames = [undefined, {}];
+    var message = 'Time frames must be objects';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
 
-  it('should check that all frame has type key', function(){
+  it('should check that all frame has "type" key', function(){
     var timeFrames = [{}, {type: 'daily'}];
-    if (!exMessage('Frame must have type key',
-      frames.validate, timeFrames)) {
+    var message = 'Frame must have type key';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
+  it('should check that "type" key has a valid value', function(){
+    var timeFrames = [
+      {type: 'notValid'},
+    ];
+    var message = 'Frame must be "daily", "weekly", "monthly", or "dates" type';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
+  it('should check if time frames has "start" and "end" keys', function(){
+    var timeFrames = [
+      { type: 'daily',
+        start: ''
+      },
+    ];
+    var message = 'Frame must have "start" and "end" keys';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
+  it('should check "start" and "end" format of "daily" time frame', function(){
+    var timeFrames = [
+      { type: 'daily',
+        start: '9:15',
+        end: '09:15'
+      },
+    ];
+    var message = '"start" and "end" format of "daily" time frame must be "hh:mm"';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
 });
+
+function testExceptMessage(message, func, param1, param2, param3){
+   try {
+      func(param1, param2, param3); // works with max. 3 parameters
+    }
+    catch(e) {
+      expect(e.message).to.be(message);
+      return true;
+    }
+    return false;
+}
