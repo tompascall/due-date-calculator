@@ -71,6 +71,21 @@ describe('Validate frames', function(){
       expect().fail();
     }
   });
+
+  it('should check "start" and "end" format of "weekly" time frame', function(){
+    var timeFrames = [
+      { type: 'weekly',
+        start: 'Sunday:09:15',
+        end: 'Sun:19:15'
+      }
+    ];
+    var message = '"start" and "end" format of "weekly" time frame' +
+     'must be the following: "DAY:hh:mm", where the DAY must be ' +
+     '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"';
+     if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

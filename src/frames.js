@@ -21,6 +21,7 @@ frames.checkObjects = function(timeFrames){
 };
 
 frames.types = ['daily', 'weekly', 'monthly', 'dates'];
+frames.days = ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'];
 
 frames.checkKeys = function(timeFrames){
   timeFrames.forEach(function(frame){
@@ -38,10 +39,27 @@ frames.checkKeys = function(timeFrames){
 };
 
 frames.checkTimeFormats = function(timeFrames){
-  var time = /^\d\d\:\d\d$/;
+  var time = /^\d\d\:\d\d$/; // hh:mm
+  var days = /^(\D{3})\:\d\d\:\d\d$/; // DAY:hh:mm
+  var day;
   timeFrames.forEach(function(frame) {
     if (frame.type === 'daily' && (!time.test(frame.start) || !time.test(frame.end))) {
       throw new Error('"start" and "end" format of "daily" time frame must be "hh:mm"');
+    }
+    if (frame.type === 'weekly') {
+      day = days.exec(frame.start);
+      if (!day || frames.days.indexOf(day[1]) === -1) {
+        throw new Error('"start" and "end" format of "weekly" time frame' +
+        'must be the following: "DAY:hh:mm", where the DAY must be ' +
+        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
+      }
+
+      day = days.exec(frame.end);
+      if (!day || frames.days.indexOf(day[1]) === -1) {
+        throw new Error('"start" and "end" format of "weekly" time frame' +
+        'must be the following: "DAY:hh:mm", where the DAY must be ' +
+        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
+      }
     }
   });
 };
