@@ -127,6 +127,21 @@ describe('Validate frames', function(){
       expect().fail();
     }
   });
+
+  it('should check "start" and "end" values of "monthly" time frames', function(){
+    var timeFrames = [
+      { type: 'monthly',
+        start: '01.22:75',
+        end: '02.22:22'
+      }
+    ];
+    var message = 'the value of "start" end "end" of "monthly" time frame must be valid time value';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
+
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

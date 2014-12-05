@@ -132,9 +132,25 @@ frames.checkWeeklyValues = function(timeFrames){
   });
 };
 
+frames.checkMonthlyValues = function(timeFrames) {
+  var time = /^\d\d\.(\d\d)\:(\d\d)$/;
+  var timeStart, timeEnd;
+  timeFrames.forEach(function(frame){
+    if (frame.type === 'monthly'){
+      timeStart = time.exec(frame.start);
+      timeEnd = time.exec(frame.end);
+      if (parseInt(timeStart[1]) > 23 || parseInt(timeStart[2]) > 59 ||
+        parseInt(timeEnd[1]) > 23 || parseInt(timeEnd[2]) > 59) {
+          throw new Error('the value of "start" end "end" of "monthly" time frame must be valid time value');
+      }
+    }
+  });
+};
+
 frames.checkValues = function(timeFrames){
   frames.checkDailyValues(timeFrames);
   frames.checkWeeklyValues(timeFrames);
+  frames.checkMonthlyValues(timeFrames);
 
 };
 
