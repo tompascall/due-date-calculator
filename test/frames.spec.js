@@ -141,7 +141,18 @@ describe('Validate frames', function(){
     }
   });
 
-
+  it('should check "start" and "end" values of "dates" time frames', function(){
+    var timeFrames = [
+      { type: 'dates',
+        start: '22014-12-05T10:00+02:00', // ISO8601 string, no seconds
+        end: '2014-12-05T10:00+02:00'
+      }
+    ];
+    var message = 'the value of "start" end "end" of "dates" time frame must be valid ISO date string';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

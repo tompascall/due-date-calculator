@@ -32,7 +32,6 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha-cli": "^1.11.0",
     "grunt-newer": "^0.8.0",
-    "grunt-node-inspector": "^0.1.5",
     "load-grunt-tasks": "^1.0.0",
     "mocha": "^2.0.1"
   }

@@ -29,7 +29,6 @@ frames.checkKeys = function(timeFrames){
       throw new Error('Frame must have type key');
     }
     if (frames.types.indexOf(frame.type) === -1) {
-      console.log(frame.type);
       throw new Error('Frame must be "daily", "weekly", "monthly", or "dates" type');
     }
     if (!frame.hasOwnProperty('start') || !frame.hasOwnProperty('end')) {
@@ -147,10 +146,26 @@ frames.checkMonthlyValues = function(timeFrames) {
   });
 };
 
+frames.checkDatesValues = function(timeFrames){
+  var startDate, endDate;
+  timeFrames.forEach(function(frame){
+    if (frame.type === 'dates') {
+      try {
+        startDate = new Date(frame.start).toISOString();
+        endDate = new Date(frame.end).toISOString();
+      }
+      catch(e) {
+        throw new Error('the value of "start" end "end" of "dates" time frame must be valid ISO date string');
+      }
+    }
+  });
+};
+
 frames.checkValues = function(timeFrames){
   frames.checkDailyValues(timeFrames);
   frames.checkWeeklyValues(timeFrames);
   frames.checkMonthlyValues(timeFrames);
+  frames.checkDatesValues(timeFrames);
 
 };
 
