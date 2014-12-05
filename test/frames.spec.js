@@ -101,6 +101,19 @@ describe('Validate frames', function(){
       expect().fail();
     }
   });
+
+  it('should check "start" and "end" values of "daily" time frames', function(){
+    var timeFrames = [
+      { type: 'daily',
+        start: '09:15',
+        end: '25:77'
+      }
+    ];
+    var message = 'the value of "start" end "end" of "daily" time frame must be valid time value';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

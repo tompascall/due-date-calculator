@@ -86,12 +86,48 @@ frames.checkTimeFormats = function(timeFrames){
   frames.checkMonthlyFormat(timeFrames);
 };
 
+frames.buffer = [];
+
+// frames.Frame = function(type, startHour, startMin, endHour, endMin, startDay, endDay){
+//   this.type = frame.type;
+//   this.start = this.setStart(frame);
+//   this.end = this.setEnd(frame);
+// };
+
+// frames.Frame.prototype.setStart = function(frame){
+//   return frame.start;
+// };
+
+// frames.Frame.prototype.setEnd = function(frame){
+//   return frame.end;
+// };
+
+frames.checkDailyValues = function(timeFrames){
+  var time = /^(\d\d)\:(\d\d)$/;
+  var timeStart, timeEnd;
+  timeFrames.forEach(function(frame){
+    if (frame.type === 'daily'){
+      timeStart = time.exec(frame.start);
+      timeEnd = time.exec(frame.end);
+      if (parseInt(timeStart[1]) > 23 || parseInt(timeStart[2] > 59) ||
+        parseInt(timeEnd[1]) > 23 || parseInt(timeEnd[2] > 59)) {
+          throw new Error('the value of "start" end "end" of "daily" time frame must be valid time value');
+      }
+    }
+  });
+};
+
+frames.checkValues = function(timeFrames){
+  frames.checkDailyValues(timeFrames);
+};
+
 frames.validate = function(timeFrames){
   if (timeFrames !== null && timeFrames !== undefined) {
     if (Array.isArray(timeFrames)) {
       frames.checkObjects(timeFrames);
       frames.checkKeys(timeFrames);
       frames.checkTimeFormats(timeFrames);
+      frames.checkValues(timeFrames);
       return true;
     }
   }
