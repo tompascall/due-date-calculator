@@ -38,30 +38,52 @@ frames.checkKeys = function(timeFrames){
   });
 };
 
-frames.checkTimeFormats = function(timeFrames){
+frames.checkDailyFormat = function(timeFrames){
   var time = /^\d\d\:\d\d$/; // hh:mm
-  var days = /^(\D{3})\:\d\d\:\d\d$/; // DAY:hh:mm
-  var day;
   timeFrames.forEach(function(frame) {
     if (frame.type === 'daily' && (!time.test(frame.start) || !time.test(frame.end))) {
       throw new Error('"start" and "end" format of "daily" time frame must be "hh:mm"');
     }
+  });
+};
+
+frames.checkWeeklyFormat = function(timeFrames){
+  var days = /^(\D{3})\:\d\d\:\d\d$/; // Day:hh:mm
+  var day;
+  timeFrames.forEach(function(frame) {
     if (frame.type === 'weekly') {
       day = days.exec(frame.start);
       if (!day || frames.days.indexOf(day[1]) === -1) {
-        throw new Error('"start" and "end" format of "weekly" time frame' +
-        'must be the following: "DAY:hh:mm", where the DAY must be ' +
+        throw new Error('"start" and "end" format of "weekly" time frame ' +
+        'must be the following: "Day:hh:mm", where the "Day" must be ' +
         '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
       }
 
       day = days.exec(frame.end);
       if (!day || frames.days.indexOf(day[1]) === -1) {
-        throw new Error('"start" and "end" format of "weekly" time frame' +
-        'must be the following: "DAY:hh:mm", where the DAY must be ' +
+        throw new Error('"start" and "end" format of "weekly" time frame ' +
+        'must be the following: "Day:hh:mm", where the "Day" must be ' +
         '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
       }
     }
   });
+};
+
+frames.checkMonthlyFormat = function(timeFrames) {
+  var day = /^\d\d\.\d\d\:\d\d$/; // dd.hh:mm
+  timeFrames.forEach(function(frame) {
+    if (frame.type === 'monthly' && (!day.test(frame.start) || !day.test(frame.end))) {
+      throw new Error('"start" and "end" format of "monthly" time frame ' +
+        'must be the following: "dd.hh:mm", where the "dd" must be ' +
+        'the number of day of the month (an integer between 01 and 31)');
+    }
+  });
+};
+
+frames.checkTimeFormats = function(timeFrames){
+  frames.checkDailyFormat(timeFrames);
+  frames.checkWeeklyFormat(timeFrames);
+  frames.checkMonthlyFormat(timeFrames);
 };
 
 frames.validate = function(timeFrames){

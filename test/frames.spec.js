@@ -75,14 +75,29 @@ describe('Validate frames', function(){
   it('should check "start" and "end" format of "weekly" time frame', function(){
     var timeFrames = [
       { type: 'weekly',
-        start: 'Sunday:09:15',
-        end: 'Sun:19:15'
+        start: 'Sun:09:15',
+        end: 'Sum:19:15'
       }
     ];
-    var message = '"start" and "end" format of "weekly" time frame' +
-     'must be the following: "DAY:hh:mm", where the DAY must be ' +
-     '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"';
-     if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    var message = '"start" and "end" format of "weekly" time frame ' +
+        'must be the following: "Day:hh:mm", where the "Day" must be ' +
+        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
+  it('should check "start" and "end" format of "monthly" time frame', function(){
+   var timeFrames = [
+      { type: 'monthly',
+        start: '1.09:15',
+        end: '02.19:15'
+      }
+    ];
+    var message = '"start" and "end" format of "monthly" time frame ' +
+        'must be the following: "dd.hh:mm", where the "dd" must be ' +
+        'the number of day of the month (an integer between 01 and 31)';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
