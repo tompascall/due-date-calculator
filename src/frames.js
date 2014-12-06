@@ -85,22 +85,6 @@ frames.checkTimeFormats = function(timeFrames){
   frames.checkMonthlyFormat(timeFrames);
 };
 
-frames.buffer = [];
-
-// frames.Frame = function(type, startHour, startMin, endHour, endMin, startDay, endDay){
-//   this.type = frame.type;
-//   this.start = this.setStart(frame);
-//   this.end = this.setEnd(frame);
-// };
-
-// frames.Frame.prototype.setStart = function(frame){
-//   return frame.start;
-// };
-
-// frames.Frame.prototype.setEnd = function(frame){
-//   return frame.end;
-// };
-
 frames.checkDailyValues = function(timeFrames){
   var time = /^(\d\d)\:(\d\d)$/;
   var timeStart, timeEnd;
@@ -180,7 +164,34 @@ frames.validate = function(timeFrames){
     }
   }
   frames.errorMissing();
+};
 
+frames.CreateFrame = function(frame){
+  this.type = frame.type;
+  this.start = this.setFrameStart(frame);
+  this.length = this.setFrameLength(frame);
+};
+
+frames.CreateFrame.prototype.setFrameStart = function(frame){
+  var time = /^(\d\d)\:(\d\d)$/;
+  var timeStart = time.exec(frame.start);
+  return parseInt(timeStart[1]) * 60 + parseInt(timeStart[2]); // start measured in minutes
+};
+
+frames.CreateFrame.prototype.setFrameLength = function(frame){
+  var time = /^(\d\d)\:(\d\d)$/;
+  var timeStart = time.exec(frame.start);
+  var timeEnd = time.exec(frame.end);
+  var timeStartInMins = parseInt(timeStart[1]) * 60 + parseInt(timeStart[2]);
+  var timeEndInMins = parseInt(timeEnd[1]) * 60 + parseInt(timeEnd[2]);
+  var length = timeEndInMins - timeStartInMins;
+  var msInMin = 60 * 1000;
+  if (length >= 0) {
+    return length * msInMin;
+  }
+  else {
+    return (24 * 60 - timeStartInMins + timeEndInMins) * msInMin; // it ends in the other day
+  }
 };
 
 module.exports = frames;

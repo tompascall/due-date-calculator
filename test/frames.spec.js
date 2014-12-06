@@ -144,14 +144,42 @@ describe('Validate frames', function(){
   it('should check "start" and "end" values of "dates" time frames', function(){
     var timeFrames = [
       { type: 'dates',
-        start: '22014-12-05T10:00+02:00', // ISO8601 string, no seconds
-        end: '2014-12-05T10:00+02:00'
+        start: '22014-12-05T10:00+02:00',
+        end: '2014-12-05T10:00+02:00' // ISO8601 string
       }
     ];
     var message = 'the value of "start" end "end" of "dates" time frame must be valid ISO date string';
     if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
+  });
+});
+
+describe('Create frames', function(){
+  var msInMin = 60 * 1000;
+
+  it('should create a daily frame', function(){
+    var timeFrames = [
+      { type: 'daily',
+        start: '09:15',
+        end: '12:15'
+      }
+    ];
+    var daily = new frames.CreateFrame(timeFrames[0]);
+    expect(daily.type).to.be('daily');
+    expect(daily.start).to.be(9 * 60 + 15); // daily start measured in minutes
+    expect(daily.length).to.be(3 * 60 * msInMin); //length measured in milliseconds
+
+    timeFrames = [
+      { type: 'daily',
+        start: '17:15',
+        end: '09:15'
+      }
+    ];
+    daily = new frames.CreateFrame(timeFrames[0]);
+    expect(daily.type).to.be('daily');
+    expect(daily.start).to.be(17 * 60 + 15);
+    expect(daily.length).to.be(16 * 60 * msInMin);
   });
 });
 
