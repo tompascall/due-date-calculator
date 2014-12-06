@@ -23,17 +23,35 @@ frames.checkObjects = function(timeFrames){
 frames.types = ['daily', 'weekly', 'monthly', 'dates'];
 frames.days = ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'];
 
+frames.checkNameKey = function(frame){
+  if (!frame.hasOwnProperty('name')) {
+    throw new Error('Frame must have "name" key');
+  }
+  if (typeof frame.name !== 'string'){
+    throw new Error('"name" key of frames must be a string');
+  }
+};
+
+frames.checkTypeKey = function(frame){
+  if (!frame.hasOwnProperty('type')) {
+    throw new Error('Frame must have "type" key');
+  }
+  if (frames.types.indexOf(frame.type) === -1) {
+    throw new Error('Frame must be "daily", "weekly", "monthly", or "dates" type');
+  }
+};
+
+frames.checkStartEndKey = function(frame){
+  if (!frame.hasOwnProperty('start') || !frame.hasOwnProperty('end')) {
+    throw new Error('Frame must have "start" and "end" keys');
+  }
+};
+
 frames.checkKeys = function(timeFrames){
   timeFrames.forEach(function(frame){
-    if (!frame.hasOwnProperty('type')) {
-      throw new Error('Frame must have type key');
-    }
-    if (frames.types.indexOf(frame.type) === -1) {
-      throw new Error('Frame must be "daily", "weekly", "monthly", or "dates" type');
-    }
-    if (!frame.hasOwnProperty('start') || !frame.hasOwnProperty('end')) {
-      throw new Error('Frame must have "start" and "end" keys');
-    }
+    frames.checkNameKey(frame);
+    frames.checkTypeKey(frame);
+    frames.checkStartEndKey(frame);
   });
 };
 
