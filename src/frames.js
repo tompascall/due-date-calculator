@@ -21,7 +21,6 @@ frames.checkObjects = function(timeFrames){
 };
 
 frames.types = ['daily', 'weekly', 'monthly', 'dates'];
-frames.days = ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'];
 
 frames.checkNameKey = function(frame){
   if (!frame.hasOwnProperty('name')) {
@@ -65,22 +64,22 @@ frames.checkDailyFormat = function(timeFrames){
 };
 
 frames.checkWeeklyFormat = function(timeFrames){
-  var days = /^(\D{3})\:\d\d\:\d\d$/; // Day:hh:mm
+  var days = /^\d\d\.\d\d\:\d\d$/; // dd:hh:mm
   var day;
   timeFrames.forEach(function(frame) {
     if (frame.type === 'weekly') {
       day = days.exec(frame.start);
-      if (!day || frames.days.indexOf(day[1]) === -1) {
+      if (day === null) {
         throw new Error('"start" and "end" format of "weekly" time frame ' +
-        'must be the following: "Day:hh:mm", where the "Day" must be ' +
-        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
+        'must be the following: "dd.hh:mm", where the "dd" must be ' +
+        '"00" to "06", where "00" means Sunday');
       }
 
       day = days.exec(frame.end);
-      if (!day || frames.days.indexOf(day[1]) === -1) {
+      if (day === null) {
         throw new Error('"start" and "end" format of "weekly" time frame ' +
-        'must be the following: "Day:hh:mm", where the "Day" must be ' +
-        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"');
+        'must be the following: "dd.hh:mm", where the "dd" must be ' +
+        '"00" to "06", where "00" means Sunday');
       }
     }
   });
@@ -135,14 +134,15 @@ frames.checkDailyValues = function(timeFrames){
 };
 
 frames.checkWeeklyValues = function(timeFrames){
-  var time = /^\D{3}\:(\d\d)\:(\d\d)$/;
+  var time = /^(\d\d)\.(\d\d)\:(\d\d)$/;
   var timeStart, timeEnd;
   timeFrames.forEach(function(frame){
     if (frame.type === 'weekly'){
       timeStart = time.exec(frame.start);
       timeEnd = time.exec(frame.end);
-      if (parseInt(timeStart[1]) > 23 || parseInt(timeStart[2]) > 59 ||
-        parseInt(timeEnd[1]) > 23 || parseInt(timeEnd[2]) > 59) {
+      if (parseInt(timeStart[1]) > 6 ||
+        parseInt(timeStart[2]) > 23 || parseInt(timeStart[3]) > 59 ||
+        parseInt(timeEnd[2]) > 23 || parseInt(timeEnd[3]) > 59) {
           throw new Error('the value of "start" end "end" of "weekly" time frame must be valid time value');
       }
     }
@@ -202,17 +202,47 @@ frames.validate = function(timeFrames){
 frames.CreateFrame = function(frame){
   this.name = frame.name;
   this.type = frame.type;
-  this.start = this.setFrameStart(frame);
+  this.startTime = this.setFrameStartTime(frame);
+  this.startDay = this.setFrameStartDay(frame);
   this.length = this.setFrameLength(frame);
 };
 
-frames.CreateFrame.prototype.setFrameStart = function(frame){
+frames.CreateFrame.prototype.setDailyFrameStartTime = function(frame){
   var time = /^(\d\d)\:(\d\d)$/;
   var timeStart = time.exec(frame.start);
   return parseInt(timeStart[1]) * 60 + parseInt(timeStart[2]); // start measured in minutes
 };
 
-frames.CreateFrame.prototype.setFrameLength = function(frame){
+frames.CreateFrame.prototype.setWeeklyFrameStartTime = function(frame){
+  var days = /^\d\d\.(\d\d)\:(\d\d)$/; // dd:hh:mm
+  var time;
+  time = days.exec(frame.start);
+  return parseInt(time[1]) * 60 + parseInt(time[2]); // start time measured in minutes
+};
+
+frames.CreateFrame.prototype.setFrameStartDay = function(frame){
+  var days;
+  switch(frame.type){
+    case 'weekly':
+      days = /^(\d\d)\.\d\d\:\d\d$/.exec(frame.start);
+      return parseInt(days[1]);
+    default:
+      return;
+  }
+};
+
+frames.CreateFrame.prototype.setFrameStartTime = function(frame){
+  switch(frame.type){
+    case 'daily':
+      return this.setDailyFrameStartTime(frame);
+    case 'weekly':
+      return this.setWeeklyFrameStartTime(frame);
+    default:
+      throw new Error('Cannot set frame start because frame type is unknown');
+  }
+};
+
+frames.CreateFrame.prototype.setDailyFrameLength = function(frame){
   var time = /^(\d\d)\:(\d\d)$/;
   var timeStart = time.exec(frame.start);
   var timeEnd = time.exec(frame.end);
@@ -225,6 +255,40 @@ frames.CreateFrame.prototype.setFrameLength = function(frame){
   }
   else {
     return (24 * 60 - timeStartInMins + timeEndInMins) * msInMin; // it ends in the other day
+  }
+};
+
+frames.CreateFrame.prototype.setWeeklyFrameLength = function(frame){
+  var days = /^(\d\d)\.(\d\d)\:(\d\d)$/; // dd.hh:mm
+  var msInMin = 60 * 1000;
+  var start = days.exec(frame.start);
+  var end = days.exec(frame.end);
+  var timeEndInMins = parseInt(end[2]) * 60 + parseInt(end[3]);
+  var endDay = parseInt(end[1]);
+  if (this.startDay < endDay) {
+    return (endDay - this.startDay) * (24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+  }
+  if (this.startDay === endDay) {
+    if (this.startTime <= timeEndInMins) {
+      return timeEndInMins - this.startTime;
+    }
+    else {
+      return (7 * 24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+    }
+  }
+  if (this.startDay > endDay) {
+    return ((7 - this.startDay + endDay) * 24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+  }
+};
+
+frames.CreateFrame.prototype.setFrameLength = function(frame){
+  switch(frame.type){
+    case 'daily':
+      return this.setDailyFrameLength(frame);
+    case 'weekly':
+      return this.setWeeklyFrameLength(frame);
+    default:
+      throw new Error('Cannot set frame length because frame type is unknown');
   }
 };
 

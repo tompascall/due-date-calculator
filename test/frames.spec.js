@@ -98,13 +98,13 @@ describe('Validate frames', function(){
     var timeFrames = [
       { name: 'foo',
         type: 'weekly',
-        start: 'Sun:09:15',
-        end: 'Sum:19:15'
+        start: '01.09:15',
+        end: 'Tue:19:15'
       }
     ];
     var message = '"start" and "end" format of "weekly" time frame ' +
-        'must be the following: "Day:hh:mm", where the "Day" must be ' +
-        '"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", or "Sat"';
+        'must be the following: "dd.hh:mm", where the "dd" must be ' +
+        '"00" to "06", where "00" means Sunday';
     if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
@@ -158,8 +158,8 @@ describe('Validate frames', function(){
     var timeFrames = [
       { name: 'foo',
         type: 'weekly',
-        start: 'Wen:22:75',
-        end: 'Thu:22:22'
+        start: '01.22:75',
+        end: '02.22:22'
       }
     ];
     var message = 'the value of "start" end "end" of "weekly" time frame must be valid time value';
@@ -210,7 +210,7 @@ describe('Create frames', function(){
     ];
     var daily = new frames.CreateFrame(timeFrames[0]);
     expect(daily.type).to.be('daily');
-    expect(daily.start).to.be(9 * 60 + 15); // daily start measured in minutes
+    expect(daily.startTime).to.be(9 * 60 + 15); // daily start measured in minutes
     expect(daily.length).to.be(3 * 60 * msInMin); //length measured in milliseconds
 
     timeFrames = [
@@ -222,8 +222,43 @@ describe('Create frames', function(){
     ];
     daily = new frames.CreateFrame(timeFrames[0]);
     expect(daily.type).to.be('daily');
-    expect(daily.start).to.be(17 * 60 + 15);
+    expect(daily.startTime).to.be(17 * 60 + 15);
     expect(daily.length).to.be(16 * 60 * msInMin);
+  });
+
+  it('should create a weekly frame', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'weekly',
+        start: '01.09:15',
+        end: '02.12:15'
+      }
+    ];
+    var weekly = new frames.CreateFrame(timeFrames[0]);
+    expect(weekly.type).to.be('weekly');
+    expect(weekly.startDay).to.be(1);
+    expect(weekly.startTime).to.be(9 * 60 + 15);
+    expect(weekly.length).to.be((24 + 3) * 60 * msInMin);
+
+    timeFrames = [
+      { name: 'foo',
+        type: 'weekly',
+        start: '01.12:15',
+        end: '01.09:15'
+      }
+    ];
+    weekly = new frames.CreateFrame(timeFrames[0]);
+    expect(weekly.length).to.be(7 * 24 * 60 * msInMin - 3 * 60 * msInMin);
+
+    timeFrames = [
+      { name: 'foo',
+        type: 'weekly',
+        start: '01.12:15', // Mon
+        end: '00.09:15' // Sun
+      }
+    ];
+    weekly = new frames.CreateFrame(timeFrames[0]);
+    expect(weekly.length).to.be(6 * 24 * 60 * msInMin - 3 * 60 * msInMin);
   });
 });
 
