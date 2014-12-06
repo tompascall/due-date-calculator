@@ -97,10 +97,26 @@ frames.checkMonthlyFormat = function(timeFrames) {
   });
 };
 
+frames.checkDatesFormat = function(timeFrames){
+  var startDate, endDate;
+  timeFrames.forEach(function(frame){
+    if (frame.type === 'dates') {
+      try {
+        startDate = new Date(frame.start).toISOString();
+        endDate = new Date(frame.end).toISOString();
+      }
+      catch(e) {
+        throw new Error('the value of "start" end "end" of "dates" time frame must be valid ISO date string');
+      }
+    }
+  });
+};
+
 frames.checkTimeFormats = function(timeFrames){
   frames.checkDailyFormat(timeFrames);
   frames.checkWeeklyFormat(timeFrames);
   frames.checkMonthlyFormat(timeFrames);
+  frames.checkDatesFormat(timeFrames);
 };
 
 frames.checkDailyValues = function(timeFrames){
@@ -134,15 +150,16 @@ frames.checkWeeklyValues = function(timeFrames){
 };
 
 frames.checkMonthlyValues = function(timeFrames) {
-  var time = /^\d\d\.(\d\d)\:(\d\d)$/;
+  var time = /^(\d\d)\.(\d\d)\:(\d\d)$/;
   var timeStart, timeEnd;
   timeFrames.forEach(function(frame){
     if (frame.type === 'monthly'){
       timeStart = time.exec(frame.start);
       timeEnd = time.exec(frame.end);
-      if (parseInt(timeStart[1]) > 23 || parseInt(timeStart[2]) > 59 ||
-        parseInt(timeEnd[1]) > 23 || parseInt(timeEnd[2]) > 59) {
-          throw new Error('the value of "start" end "end" of "monthly" time frame must be valid time value');
+      if (parseInt(timeStart[1]) === 0 || parseInt(timeStart[1]) > 31 ||
+        parseInt(timeStart[2]) > 23 || parseInt(timeStart[3]) > 59 ||
+        parseInt(timeEnd[2]) > 23 || parseInt(timeEnd[3]) > 59) {
+          throw new Error('the value of "start" end "end" of "monthly" time frame must be valid day and time value');
       }
     }
   });
@@ -151,13 +168,11 @@ frames.checkMonthlyValues = function(timeFrames) {
 frames.checkDatesValues = function(timeFrames){
   var startDate, endDate;
   timeFrames.forEach(function(frame){
-    if (frame.type === 'dates') {
-      try {
-        startDate = new Date(frame.start).toISOString();
-        endDate = new Date(frame.end).toISOString();
-      }
-      catch(e) {
-        throw new Error('the value of "start" end "end" of "dates" time frame must be valid ISO date string');
+    if (frame.type === 'dates'){
+      startDate = new Date(frame.start);
+      endDate = new Date(frame.end);
+      if (startDate.getTime() > endDate.getTime()) {
+        throw new Error('the "start" date of "dates" time frame must be before the "end" date');
       }
     }
   });
@@ -185,6 +200,7 @@ frames.validate = function(timeFrames){
 };
 
 frames.CreateFrame = function(frame){
+  this.name = frame.name;
   this.type = frame.type;
   this.start = this.setFrameStart(frame);
   this.length = this.setFrameLength(frame);

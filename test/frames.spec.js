@@ -126,6 +126,20 @@ describe('Validate frames', function(){
     }
   });
 
+  it('should check "start" and "end" format of "dates" time frames', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'dates',
+        start: '22014-12-05T10:00+02:00',
+        end: '2014-12-05T10:00+02:00' // ISO8601 string
+      }
+    ];
+    var message = 'the value of "start" end "end" of "dates" time frame must be valid ISO date string';
+    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+      expect().fail();
+    }
+  });
+
   it('should check "start" and "end" values of "daily" time frames', function(){
     var timeFrames = [
       { name: 'foo',
@@ -162,7 +176,7 @@ describe('Validate frames', function(){
         end: '02.22:22'
       }
     ];
-    var message = 'the value of "start" end "end" of "monthly" time frame must be valid time value';
+    var message = 'the value of "start" end "end" of "monthly" time frame must be valid day and time value';
     if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
@@ -172,11 +186,11 @@ describe('Validate frames', function(){
     var timeFrames = [
       { name: 'foo',
         type: 'dates',
-        start: '22014-12-05T10:00+02:00',
-        end: '2014-12-05T10:00+02:00' // ISO8601 string
+        start: '2015-12-05T10:00+02:00',
+        end: '2014-12-05T10:00+02:00'
       }
     ];
-    var message = 'the value of "start" end "end" of "dates" time frame must be valid ISO date string';
+    var message = 'the "start" date of "dates" time frame must be before the "end" date';
     if (!testExceptMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
