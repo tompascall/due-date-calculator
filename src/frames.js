@@ -199,12 +199,21 @@ frames.validate = function(timeFrames){
   frames.errorMissing();
 };
 
-frames.CreateFrame = function(frame){
+frames.CreateFrame = function(frame, referenceDate){
   this.name = frame.name;
   this.type = frame.type;
   this.startTime = this.setFrameStartTime(frame);
   this.startDay = this.setFrameStartDay(frame);
+  this.referenceDate = this.cloneDate(referenceDate);
   this.length = this.setFrameLength(frame);
+};
+
+frames.CreateFrame.prototype.cloneDate = function(date) {
+  if (date !== undefined) {
+    var clone = new Date();
+    clone.setTime(date.getTime());
+    return clone;
+  }
 };
 
 frames.CreateFrame.prototype.setDailyFrameStartTime = function(frame){
@@ -220,10 +229,20 @@ frames.CreateFrame.prototype.setWeeklyFrameStartTime = function(frame){
   return parseInt(time[1]) * 60 + parseInt(time[2]); // start time measured in minutes
 };
 
+frames.CreateFrame.prototype.setMonthlyFrameStartTime = function(frame) {
+  var days = /^\d\d\.(\d\d)\:(\d\d)$/; // dd:hh:mm
+  var time;
+  time = days.exec(frame.start);
+  return parseInt(time[1]) * 60 + parseInt(time[2]); // start time measured in minutes
+};
+
 frames.CreateFrame.prototype.setFrameStartDay = function(frame){
   var days;
   switch(frame.type){
     case 'weekly':
+      days = /^(\d\d)\.\d\d\:\d\d$/.exec(frame.start);
+      return parseInt(days[1]);
+    case 'monthly':
       days = /^(\d\d)\.\d\d\:\d\d$/.exec(frame.start);
       return parseInt(days[1]);
     default:
@@ -237,6 +256,8 @@ frames.CreateFrame.prototype.setFrameStartTime = function(frame){
       return this.setDailyFrameStartTime(frame);
     case 'weekly':
       return this.setWeeklyFrameStartTime(frame);
+    case 'monthly':
+      return this.setMonthlyFrameStartTime(frame);
     default:
       throw new Error('Cannot set frame start because frame type is unknown');
   }
@@ -261,7 +282,7 @@ frames.CreateFrame.prototype.setDailyFrameLength = function(frame){
 frames.CreateFrame.prototype.setWeeklyFrameLength = function(frame){
   var days = /^(\d\d)\.(\d\d)\:(\d\d)$/; // dd.hh:mm
   var msInMin = 60 * 1000;
-  var start = days.exec(frame.start);
+  //var start = days.exec(frame.start);
   var end = days.exec(frame.end);
   var timeEndInMins = parseInt(end[2]) * 60 + parseInt(end[3]);
   var endDay = parseInt(end[1]);
@@ -270,7 +291,7 @@ frames.CreateFrame.prototype.setWeeklyFrameLength = function(frame){
   }
   if (this.startDay === endDay) {
     if (this.startTime <= timeEndInMins) {
-      return timeEndInMins - this.startTime;
+      return (timeEndInMins - this.startTime) * msInMin;
     }
     else {
       return (7 * 24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
@@ -281,12 +302,55 @@ frames.CreateFrame.prototype.setWeeklyFrameLength = function(frame){
   }
 };
 
+frames.CreateFrame.prototype.lastDayOfMonth = function() {
+  if (this.referenceDate !== undefined) {
+    var date = new Date();
+    date.setTime(this.referenceDate.getTime());
+    var currentMonth = date.getMonth(); // 0 - 11 as Jan - Dec
+    var day;
+    do {
+      day = date.getDate();
+      date.setDate(date.getDate() + 1);
+    }
+    while (date.getMonth() === currentMonth);
+    return day;
+  }
+};
+
+frames.CreateFrame.prototype.setMonthlyFrameLength = function(frame){
+  var days = /^(\d\d)\.(\d\d)\:(\d\d)$/; // dd.hh:mm
+  var msInMin = 60 * 1000;
+  //var start = days.exec(frame.start);
+  var end = days.exec(frame.end);
+  var timeEndInMins = parseInt(end[2]) * 60 + parseInt(end[3]);
+  var endDay = parseInt(end[1]);
+  if (this.startDay < endDay) {
+    return (endDay - this.startDay) * (24 * 60 * msInMin) - (this.startTime -
+      timeEndInMins) * msInMin;
+  }
+  if (this.startDay === endDay) {
+    if (this.startTime <= timeEndInMins) {
+      return (timeEndInMins - this.startTime) * msInMin;
+    }
+    else {
+      return (this.lastDayOfMonth() * 24 * 60 * msInMin) - (this.startTime -
+        timeEndInMins) * msInMin;
+    }
+  }
+  if (this.startDay > endDay) {
+    return (this.lastDayOfMonth() - this.startDay + endDay) * 24 * 60 * msInMin -
+      (this.startTime - timeEndInMins) * msInMin;
+  }
+};
+
 frames.CreateFrame.prototype.setFrameLength = function(frame){
   switch(frame.type){
     case 'daily':
       return this.setDailyFrameLength(frame);
     case 'weekly':
       return this.setWeeklyFrameLength(frame);
+    case 'monthly':
+      return this.setMonthlyFrameLength(frame);
     default:
       throw new Error('Cannot set frame length because frame type is unknown');
   }

@@ -260,6 +260,54 @@ describe('Create frames', function(){
     weekly = new frames.CreateFrame(timeFrames[0]);
     expect(weekly.length).to.be(6 * 24 * 60 * msInMin - 3 * 60 * msInMin);
   });
+
+  it('should create a monthly frame', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'monthly',
+        start: '01.12:15',
+        end: '02.22:15'
+      }
+    ];
+    var monthly = new frames.CreateFrame(timeFrames[0]);
+    expect(monthly.type).to.be('monthly');
+    expect(monthly.startDay).to.be(1);
+    expect(monthly.startTime).to.be(12 * 60 + 15);
+    expect(monthly.length).to.be((24 + 10) * 60 * msInMin);
+
+    timeFrames = [
+      { name: 'foo',
+        type: 'monthly',
+        start: '01.12:15',
+        end: '01.22:15'
+      }
+    ];
+    monthly = new frames.CreateFrame(timeFrames[0]);
+    expect(monthly.length).to.be((10) * 60 * msInMin);
+
+    timeFrames = [
+      { name: 'overflow',
+        type: 'monthly',
+        start: '01.22:15',
+        end: '01.12:15'
+      }
+    ];
+    var referenceDate = new Date('2014-12-05T10:00+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.lastDayOfMonth()).to.be(31);
+    expect(monthly.length).to.be((31 * 24) * 60 * msInMin - 10 * 60 * msInMin);
+
+    timeFrames = [
+      { name: 'overflow',
+        type: 'monthly',
+        start: '02.12:15',
+        end: '01.15:15'
+      }
+    ];
+    referenceDate = new Date('2014-12-05T10:00+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.length).to.be((30 * 24) * 60 * msInMin + 3 * 60 * msInMin);
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){
