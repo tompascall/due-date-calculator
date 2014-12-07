@@ -308,6 +308,20 @@ describe('Create frames', function(){
     monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
     expect(monthly.length).to.be((30 * 24) * 60 * msInMin + 3 * 60 * msInMin);
   });
+
+  it('should create a dates time frame', function(){
+    var timeFrames = [
+      { name: 'Xmas',
+        type: 'dates',
+        start: '2014-12-24T10:15+01:00',
+        end: '2014-12-26T12:15+01:00'
+      }
+    ];
+    var dates = new frames.CreateFrame(timeFrames[0]);
+    expect(dates.type).to.be('dates');
+    expect(dates.length).to.be((24 * 2 + 2) * 60 * msInMin);
+
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

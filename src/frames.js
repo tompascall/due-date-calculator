@@ -238,6 +238,7 @@ frames.CreateFrame.prototype.setMonthlyFrameStartTime = function(frame) {
 
 frames.CreateFrame.prototype.setFrameStartDay = function(frame){
   var days;
+  var date;
   switch(frame.type){
     case 'weekly':
       days = /^(\d\d)\.\d\d\:\d\d$/.exec(frame.start);
@@ -245,6 +246,8 @@ frames.CreateFrame.prototype.setFrameStartDay = function(frame){
     case 'monthly':
       days = /^(\d\d)\.\d\d\:\d\d$/.exec(frame.start);
       return parseInt(days[1]);
+    case 'dates':
+      return;
     default:
       return;
   }
@@ -258,6 +261,8 @@ frames.CreateFrame.prototype.setFrameStartTime = function(frame){
       return this.setWeeklyFrameStartTime(frame);
     case 'monthly':
       return this.setMonthlyFrameStartTime(frame);
+    case 'dates':
+      return;
     default:
       throw new Error('Cannot set frame start because frame type is unknown');
   }
@@ -343,6 +348,14 @@ frames.CreateFrame.prototype.setMonthlyFrameLength = function(frame){
   }
 };
 
+frames.CreateFrame.prototype.setDatesFrameLength = function(frame){
+  var startDate = new Date(frame.start);
+  var endDate = new Date(frame.end);
+  startDate.setSeconds(0, 0); // we don't deal with seconds & ms
+  endDate.setSeconds(0, 0);
+  return (endDate.getTime() - startDate.getTime());
+};
+
 frames.CreateFrame.prototype.setFrameLength = function(frame){
   switch(frame.type){
     case 'daily':
@@ -351,6 +364,8 @@ frames.CreateFrame.prototype.setFrameLength = function(frame){
       return this.setWeeklyFrameLength(frame);
     case 'monthly':
       return this.setMonthlyFrameLength(frame);
+    case 'dates':
+      return this.setDatesFrameLength(frame);
     default:
       throw new Error('Cannot set frame length because frame type is unknown');
   }
