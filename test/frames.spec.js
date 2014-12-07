@@ -323,18 +323,50 @@ describe('Create frames', function(){
 
   });
 
-  // it('should set start date of "daily" frames by referenceDate', function(){
-  //   var timeFrames = [
-  //     { name: 'foo',
-  //       type: 'daily',
-  //       start: '09:00',
-  //       end: '12:00'
-  //     }
-  //   ];
-  //   var referenceDate = new Date('2014-12-05T10:15+01:00');
-  //   var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
-  //   expect(daily.startDate.getDate()).to.be(12);
-  // });
+  it('should set start date of a non overflown "daily" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'daily',
+        start: '09:15',
+        end: '12:00'
+      }
+    ];
+    var referenceDate = new Date('2014-12-05T09:30+01:00');
+    var testStartDate = new Date('2014-12-05T09:15+01:00');
+    var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-05T09:14+01:00');
+    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate).to.be(null);
+
+    referenceDate = new Date('2014-12-05T12:01+01:00');
+    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate).to.be(null);
+  });
+
+  it('should set start date of an overflown "daily" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'daily',
+        start: '17:00',
+        end: '09:00'
+      }
+    ];
+    var referenceDate = new Date('2014-12-05T19:30+01:00');
+    var testStartDate = new Date('2014-12-05T17:00+01:00');
+    var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-05T08:30+01:00');
+    testStartDate = new Date('2014-12-04T17:00+01:00');
+    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-05T14:00+01:00');
+    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(daily.startDate).to.be(null);
+  });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){
