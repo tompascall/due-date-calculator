@@ -257,27 +257,36 @@ DailyFrame.prototype.setFrameLength = function(frame){
   }
 };
 
+DailyFrame.prototype.helperFrameStartDate = function(referenceDate) {
+  var helperFrameStartDate = this.cloneDate(referenceDate);
+  helperFrameStartDate.setHours(0, 0, 0, 0);
+  helperFrameStartDate.setMinutes(this.startTime);
+  return helperFrameStartDate;
+};
+
+DailyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
+  var helperFrameEndDate = new Date();
+  helperFrameEndDate.setTime(helperFrameStartDate.getTime() + this.length);
+  return helperFrameEndDate;
+};
+
 DailyFrame.prototype.setStartDate = function(frame, referenceDate) {
   if (referenceDate !== undefined) {
-    var helperFrameStartDate = this.cloneDate(referenceDate);
-    helperFrameStartDate.setHours(0, 0, 0, 0);
-    helperFrameStartDate.setMinutes(this.startTime);
-    var helperFrameEndDate = new Date();
-    helperFrameEndDate.setTime(helperFrameStartDate.getTime() + this.length);
-
+    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+    var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
     var helperFrameStartInMins = this.startTime;
     var referenceDateInMins = referenceDate.getHours() * 60 + referenceDate.getMinutes();
     var helperFrameEndInMins = helperFrameEndDate.getHours() * 60 +
       helperFrameEndDate.getMinutes();
 
     if (helperFrameStartInMins < helperFrameEndInMins) { // not overflown
-      if (helperFrameEndDate.getTime() >= referenceDate.getTime() &&
-        helperFrameStartDate.getTime() <= referenceDate.getTime()) {
+      if (helperFrameStartInMins <= referenceDateInMins &&
+          helperFrameEndInMins >= referenceDateInMins) {
         return helperFrameStartDate;
       }
     }
     if (helperFrameStartInMins > helperFrameEndInMins) { // overflown
-      if (helperFrameStartDate.getTime() <= referenceDate.getTime()) {
+      if (helperFrameStartInMins <= referenceDateInMins) {
         return helperFrameStartDate;
       }
       if (helperFrameEndInMins >= referenceDateInMins) {
