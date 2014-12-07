@@ -205,6 +205,7 @@ frames.CreateFrame = function(frame, referenceDate){
   this.startTime = this.setFrameStartTime(frame);
   this.startDay = this.setFrameStartDay(frame);
   this.referenceDate = this.cloneDate(referenceDate);
+  this.startDate = this.setStartDate(referenceDate);
   this.length = this.setFrameLength(frame);
 };
 
@@ -370,5 +371,19 @@ frames.CreateFrame.prototype.setFrameLength = function(frame){
       throw new Error('Cannot set frame length because frame type is unknown');
   }
 };
+
+// frames.CreateFrame.prototype.setStartDate = function(referenceDate){
+//   switch(frame.type){
+//     case 'daily':
+//       return this.setDailyStartDate(frame);
+//     // case 'weekly':
+//     //   return this.setWeeklyFrameLength(frame);
+//     // case 'monthly':
+//     //   return this.setMonthlyFrameLength(frame);
+//     // case 'dates':
+//     //   return this.setDatesFrameLength(frame);
+//     default:
+//       throw new Error('Cannot set startDate because frame type is unknown');
+// };
 
 module.exports = frames;

@@ -322,6 +322,19 @@ describe('Create frames', function(){
     expect(dates.length).to.be((24 * 2 + 2) * 60 * msInMin);
 
   });
+
+  // it('should set start date of "daily" frames by referenceDate', function(){
+  //   var timeFrames = [
+  //     { name: 'foo',
+  //       type: 'daily',
+  //       start: '09:00',
+  //       end: '12:00'
+  //     }
+  //   ];
+  //   var referenceDate = new Date('2014-12-05T10:15+01:00');
+  //   var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+  //   expect(daily.startDate.getDate()).to.be(12);
+  // });
 });
 
 function testExceptMessage(message, func, param1, param2, param3){
