@@ -345,7 +345,7 @@ describe('Create frames', function(){
     expect(daily.startDate).to.be(null);
   });
 
-  it('should set start date of an overflown "daily" frames by referenceDate', function(){
+  it('should set start date of overflown "daily" frames by referenceDate', function(){
     var timeFrames = [
       { name: 'foo',
         type: 'daily',
@@ -366,6 +366,20 @@ describe('Create frames', function(){
     referenceDate = new Date('2014-12-05T14:00+01:00');
     daily = new frames.CreateFrame(timeFrames[0], referenceDate);
     expect(daily.startDate).to.be(null);
+  });
+
+  it('should set start date of non overflown "weekly" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'weekly',
+        start: '05.12:15', // Fri
+        end: '06.14:15' // Sat
+      }
+    ];
+    var referenceDate = new Date('2014-12-05T13:01+01:00');
+    var testStartDate = new Date('2014-12-05T12:15+01:00');
+    var weekly = new frames.CreateFrame(timeFrames[0]);
+    expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
   });
 });
 

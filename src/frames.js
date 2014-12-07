@@ -202,11 +202,12 @@ frames.validate = function(timeFrames){
 function Frame(frame, referenceDate) {
   this.name = frame.name;
   this.type = frame.type;
+  this.msInMin = 60 * 1000;
   this.startTime = this.setFrameStartTime(frame);
   this.startDay = this.setFrameStartDay(frame);
   this.referenceDate = this.cloneDate(referenceDate);
   this.length = this.setFrameLength(frame);
-  this.startDate = this.setStartDate(frame, referenceDate);
+  this.startDate = this.setStartDate(referenceDate);
 }
 
 Frame.prototype.setFrameStartTime = function(){
@@ -248,12 +249,11 @@ DailyFrame.prototype.setFrameLength = function(frame){
   var timeStartInMins = parseInt(timeStart[1]) * 60 + parseInt(timeStart[2]);
   var timeEndInMins = parseInt(timeEnd[1]) * 60 + parseInt(timeEnd[2]);
   var length = timeEndInMins - timeStartInMins;
-  var msInMin = 60 * 1000;
   if (length >= 0) {
-    return length * msInMin;
+    return length * this.msInMin;
   }
   else {
-    return (24 * 60 - timeStartInMins + timeEndInMins) * msInMin; // it ends in the other day
+    return (24 * 60 - timeStartInMins + timeEndInMins) * this.msInMin; // it ends in the other day
   }
 };
 
@@ -270,14 +270,14 @@ DailyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
   return helperFrameEndDate;
 };
 
-DailyFrame.prototype.setStartDate = function(frame, referenceDate) {
+DailyFrame.prototype.setStartDate = function(referenceDate) {
   if (referenceDate !== undefined) {
     var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
     var helperFrameStartInMins = this.startTime;
-    var referenceDateInMins = referenceDate.getHours() * 60 + referenceDate.getMinutes();
     var helperFrameEndInMins = helperFrameEndDate.getHours() * 60 +
       helperFrameEndDate.getMinutes();
+    var referenceDateInMins = referenceDate.getHours() * 60 + referenceDate.getMinutes();
 
     if (helperFrameStartInMins < helperFrameEndInMins) { // not overflown
       if (helperFrameStartInMins <= referenceDateInMins &&
@@ -319,24 +319,63 @@ WeeklyFrame.prototype.setFrameStartDay = function(frame){
 
 WeeklyFrame.prototype.setFrameLength = function(frame) {
   var days = /^(\d\d)\.(\d\d)\:(\d\d)$/; // dd.hh:mm
-  var msInMin = 60 * 1000;
   var end = days.exec(frame.end);
   var timeEndInMins = parseInt(end[2]) * 60 + parseInt(end[3]);
   var endDay = parseInt(end[1]);
   if (this.startDay < endDay) {
-    return (endDay - this.startDay) * (24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+    return (endDay - this.startDay) * (24 * 60 * this.msInMin) - (this.startTime - timeEndInMins) * this.msInMin;
   }
   if (this.startDay === endDay) {
     if (this.startTime <= timeEndInMins) {
-      return (timeEndInMins - this.startTime) * msInMin;
+      return (timeEndInMins - this.startTime) * this.msInMin;
     }
     else {
-      return (7 * 24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+      return (7 * 24 * 60 * this.msInMin) - (this.startTime - timeEndInMins) * this.msInMin;
     }
   }
   if (this.startDay > endDay) {
-    return ((7 - this.startDay + endDay) * 24 * 60 * msInMin) - (this.startTime - timeEndInMins) * msInMin;
+    return ((7 - this.startDay + endDay) * 24 * 60 * this.msInMin) - (this.startTime - timeEndInMins) * this.msInMin;
   }
+};
+
+WeeklyFrame.prototype.setDay = function(date, day) {
+  var currentDay = date.getDay();
+  date.setDate(date.getDate() - currentDay + day);
+};
+
+WeeklyFrame.prototype.helperFrameStartDate = function(referenceDate) {
+  var helperFrameStartDate = this.cloneDate(referenceDate);
+  this.setDay(helperFrameStartDate, this.startDay);
+  helperFrameStartDate.setHours(0, 0, 0, 0);
+  helperFrameStartDate.setMinutes(this.startTime);
+  return helperFrameStartDate;
+};
+
+WeeklyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
+  var helperFrameEndDate = this.cloneDate(helperFrameStartDate);
+  helperFrameEndDate.setTime(helperFrameEndDate.getTime() + this.length);
+  return helperFrameEndDate;
+};
+WeeklyFrame.prototype.setStartDate = function(referenceDate) {
+  if (referenceDate !== undefined) {
+    console.log('hello');
+    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+    var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
+    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+        referenceDate.getTime() <= helperFrameEndDate.getTime()) {
+        console.log(helperFrameStartDate.toString());
+      return helperFrameStartDate;
+    }
+    if (helperFrameStartDate.getDay() > helperFrameEndDate.getDay()) {
+      if (referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * this.msInMin)) {
+        helperFrameStartDate.setDate(helperFrameStartDate.getDate() - 7);
+        console.log(helperFrameStartDate.toString());
+        return helperFrameStartDate;
+      }
+    }
+    return null;
+  }
+  console.log('unde');
 };
 
 function MonthlyFrame(frame, referenceDate) {
@@ -374,26 +413,25 @@ MonthlyFrame.prototype.lastDayOfMonth = function() {
 };
 MonthlyFrame.prototype.setFrameLength = function(frame) {
   var days = /^(\d\d)\.(\d\d)\:(\d\d)$/; // dd.hh:mm
-  var msInMin = 60 * 1000;
   var end = days.exec(frame.end);
   var timeEndInMins = parseInt(end[2]) * 60 + parseInt(end[3]);
   var endDay = parseInt(end[1]);
   if (this.startDay < endDay) {
-    return (endDay - this.startDay) * (24 * 60 * msInMin) - (this.startTime -
-      timeEndInMins) * msInMin;
+    return (endDay - this.startDay) * (24 * 60 * this.msInMin) - (this.startTime -
+      timeEndInMins) * this.msInMin;
   }
   if (this.startDay === endDay) {
     if (this.startTime <= timeEndInMins) {
-      return (timeEndInMins - this.startTime) * msInMin;
+      return (timeEndInMins - this.startTime) * this.msInMin;
     }
     else {
-      return (this.lastDayOfMonth() * 24 * 60 * msInMin) - (this.startTime -
-        timeEndInMins) * msInMin;
+      return (this.lastDayOfMonth() * 24 * 60 * this.msInMin) - (this.startTime -
+        timeEndInMins) * this.msInMin;
     }
   }
   if (this.startDay > endDay) {
-    return (this.lastDayOfMonth() - this.startDay + endDay) * 24 * 60 * msInMin -
-      (this.startTime - timeEndInMins) * msInMin;
+    return (this.lastDayOfMonth() - this.startDay + endDay) * 24 * 60 * this.msInMin -
+      (this.startTime - timeEndInMins) * this.msInMin;
   }
 };
 
