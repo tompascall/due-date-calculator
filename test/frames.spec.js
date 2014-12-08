@@ -378,9 +378,39 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-05T13:01+01:00');
     var testStartDate = new Date('2014-12-05T12:15+01:00');
-    var weekly = new frames.CreateFrame(timeFrames[0]);
+    var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-05T11:01+01:00');
+    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(weekly.startDate).to.be(null);
+
+    referenceDate = new Date('2014-12-06T14:16+01:00');
+    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(weekly.startDate).to.be(null);
   });
+});
+
+it('should set start date of overflown "weekly" frames by referenceDate', function(){
+  var timeFrames = [
+    { name: 'foo',
+      type: 'weekly',
+      start: '06.12:15', // Sat
+      end: '02.14:15' // Tue
+    }
+  ];
+  var referenceDate = new Date('2014-12-08T13:01+01:00');
+  var testStartDate = new Date('2014-12-06T12:15+01:00');
+  var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+  expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
+
+  referenceDate = new Date('2014-12-05T13:01+01:00');
+  weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+  expect(weekly.startDate).to.be(null);
+
+  referenceDate = new Date('2014-12-10T13:01+01:00'); // Wed
+  weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+  expect(weekly.startDate).to.be(null);
 });
 
 function testExceptMessage(message, func, param1, param2, param3){

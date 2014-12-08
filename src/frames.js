@@ -356,26 +356,25 @@ WeeklyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
   helperFrameEndDate.setTime(helperFrameEndDate.getTime() + this.length);
   return helperFrameEndDate;
 };
+
 WeeklyFrame.prototype.setStartDate = function(referenceDate) {
   if (referenceDate !== undefined) {
-    console.log('hello');
     var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
     if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
         referenceDate.getTime() <= helperFrameEndDate.getTime()) {
-        console.log(helperFrameStartDate.toString());
+        //console.log(helperFrameStartDate.toString());
       return helperFrameStartDate;
     }
     if (helperFrameStartDate.getDay() > helperFrameEndDate.getDay()) {
-      if (referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * this.msInMin)) {
+      if (referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * 60 * this.msInMin)) {
         helperFrameStartDate.setDate(helperFrameStartDate.getDate() - 7);
-        console.log(helperFrameStartDate.toString());
+        //console.log(helperFrameStartDate.toString());
         return helperFrameStartDate;
       }
     }
     return null;
   }
-  console.log('unde');
 };
 
 function MonthlyFrame(frame, referenceDate) {
