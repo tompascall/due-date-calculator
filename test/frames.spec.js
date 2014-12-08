@@ -4,6 +4,7 @@
 
 var expect = require('expect.js');
 var frames = require('../src/frames.js');
+var helper = require('../lib/testHelpers.js');
 
 describe('Validate frames', function(){
 
@@ -16,7 +17,7 @@ describe('Validate frames', function(){
     'if timeFrames parameter missing or not an array', function(){
     var timeFrames;
     var message = 'TimeFrames argument missing or not an array';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -24,7 +25,7 @@ describe('Validate frames', function(){
   it('should check that all elements of the array is an object', function(){
     var timeFrames = [undefined, {}];
     var message = 'Time frames must be objects';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -32,7 +33,7 @@ describe('Validate frames', function(){
   it('should check that all frame has "name" key', function(){
     var timeFrames = [{}, {}];
     var message = 'Frame must have "name" key';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -40,7 +41,7 @@ describe('Validate frames', function(){
   it('should check that all frame has "type" key', function(){
     var timeFrames = [{name: 'lunch time'}];
     var message = 'Frame must have "type" key';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -51,7 +52,7 @@ describe('Validate frames', function(){
         type: 'bar'},
     ];
     var message = '"name" key of frames must be a string';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -62,7 +63,7 @@ describe('Validate frames', function(){
         type: 'notValid'},
     ];
     var message = 'Frame must be "daily", "weekly", "monthly", or "dates" type';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -75,7 +76,7 @@ describe('Validate frames', function(){
       },
     ];
     var message = 'Frame must have "start" and "end" keys';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -89,7 +90,7 @@ describe('Validate frames', function(){
       },
     ];
     var message = '"start" and "end" format of "daily" time frame must be "hh:mm"';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -105,7 +106,7 @@ describe('Validate frames', function(){
     var message = '"start" and "end" format of "weekly" time frame ' +
         'must be the following: "dd.hh:mm", where the "dd" must be ' +
         '"00" to "06", where "00" means Sunday';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -121,7 +122,7 @@ describe('Validate frames', function(){
     var message = '"start" and "end" format of "monthly" time frame ' +
         'must be the following: "dd.hh:mm", where the "dd" must be ' +
         'the number of day of the month (an integer between 01 and 31)';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -135,7 +136,7 @@ describe('Validate frames', function(){
       }
     ];
     var message = 'the value of "start" end "end" of "dates" time frame must be valid ISO date string';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -149,7 +150,7 @@ describe('Validate frames', function(){
       }
     ];
     var message = 'the value of "start" end "end" of "daily" time frame must be valid time value';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -163,7 +164,7 @@ describe('Validate frames', function(){
       }
     ];
     var message = 'the value of "start" end "end" of "weekly" time frame must be valid time value';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -177,7 +178,7 @@ describe('Validate frames', function(){
       }
     ];
     var message = 'the value of "start" end "end" of "monthly" time frame must be valid day and time value';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -191,7 +192,7 @@ describe('Validate frames', function(){
       }
     ];
     var message = 'the "start" date of "dates" time frame must be before the "end" date';
-    if (!testExceptMessage(message, frames.validate, timeFrames)) {
+    if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
   });
@@ -389,37 +390,43 @@ describe('Create frames', function(){
     weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate).to.be(null);
   });
+
+  it('should set start date of overflown "weekly" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'weekly',
+        start: '06.12:15', // Sat
+        end: '02.14:15' // Tue
+      }
+    ];
+    var referenceDate = new Date('2014-12-08T13:01+01:00');
+    var testStartDate = new Date('2014-12-06T12:15+01:00');
+    var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-05T13:01+01:00');
+    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(weekly.startDate).to.be(null);
+
+    referenceDate = new Date('2014-12-10T13:01+01:00'); // Wed
+    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(weekly.startDate).to.be(null);
+  });
+
+  it('should set start date of non overflown "monthly" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'monthly',
+        start: '01.12:15',
+        end: '03.22:15'
+      }
+    ];
+    var monthly = new frames.CreateFrame(timeFrames[0]);
+    var referenceDate = new Date('2014-12-02T13:01+01:00');
+    var testStartDate = new Date('2014-12-01T12:15+01:00');
+    expect(monthly.startDate.getTime()).to.be(testStartDate.getTime());
+  });
 });
 
-it('should set start date of overflown "weekly" frames by referenceDate', function(){
-  var timeFrames = [
-    { name: 'foo',
-      type: 'weekly',
-      start: '06.12:15', // Sat
-      end: '02.14:15' // Tue
-    }
-  ];
-  var referenceDate = new Date('2014-12-08T13:01+01:00');
-  var testStartDate = new Date('2014-12-06T12:15+01:00');
-  var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
-  expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
 
-  referenceDate = new Date('2014-12-05T13:01+01:00');
-  weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
-  expect(weekly.startDate).to.be(null);
 
-  referenceDate = new Date('2014-12-10T13:01+01:00'); // Wed
-  weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
-  expect(weekly.startDate).to.be(null);
-});
-
-function testExceptMessage(message, func, param1, param2, param3){
-   try {
-      func(param1, param2, param3); // works with max. 3 parameters
-    }
-    catch(e) {
-      expect(e.message).to.be(message);
-      return true;
-    }
-    return false;
-}
