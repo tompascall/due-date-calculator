@@ -14,7 +14,7 @@ calc.checkArgs = function(args){
     throw new Error('calculateDueDate() function must have at least 2 arguments');
   }
   var date = new Date();
-  if (!date.isPrototypeOf(argArr[0])) {
+  if (!date.isPrototypeOf(argArr[0])){
     throw new Error('submitDate argument must be a date object');
   }
 };
