@@ -363,13 +363,11 @@ WeeklyFrame.prototype.setStartDate = function(referenceDate) {
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
     if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
         referenceDate.getTime() <= helperFrameEndDate.getTime()) {
-        //console.log(helperFrameStartDate.toString());
       return helperFrameStartDate;
     }
     if (helperFrameStartDate.getDay() > helperFrameEndDate.getDay()) {
       if (referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * 60 * this.msInMin)) {
         helperFrameStartDate.setDate(helperFrameStartDate.getDate() - 7);
-        //console.log(helperFrameStartDate.toString());
         return helperFrameStartDate;
       }
     }
@@ -431,6 +429,39 @@ MonthlyFrame.prototype.setFrameLength = function(frame) {
   if (this.startDay > endDay) {
     return (this.lastDayOfMonth() - this.startDay + endDay) * 24 * 60 * this.msInMin -
       (this.startTime - timeEndInMins) * this.msInMin;
+  }
+};
+
+MonthlyFrame.prototype.helperFrameStartDate = function(referenceDate) {
+  var helperFrameStartDate = this.cloneDate(referenceDate);
+  helperFrameStartDate.setDate(this.startDay);
+  helperFrameStartDate.setHours(0, 0, 0, 0);
+  helperFrameStartDate.setMinutes(this.startTime);
+  return helperFrameStartDate;
+};
+
+MonthlyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
+  var helperFrameEndDate = this.cloneDate(helperFrameStartDate);
+  helperFrameEndDate.setTime(helperFrameEndDate.getTime() + this.length);
+  return helperFrameEndDate;
+};
+
+MonthlyFrame.prototype.setStartDate = function(referenceDate) {
+  if (referenceDate !== undefined) {
+    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+    var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
+    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+        referenceDate.getTime() <= helperFrameEndDate.getTime()) {
+      return helperFrameStartDate;
+    }
+    if (helperFrameStartDate.getDate() > helperFrameEndDate.getDate()) {
+      helperFrameEndDate.setMonth(helperFrameEndDate.getMonth() - 1);
+      if (referenceDate.getTime() < helperFrameEndDate.getTime()) {
+        helperFrameStartDate.setMonth(helperFrameStartDate.getMonth() - 1);
+        return helperFrameStartDate;
+      }
+    }
+    return null;
   }
 };
 

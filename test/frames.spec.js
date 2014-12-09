@@ -421,10 +421,40 @@ describe('Create frames', function(){
         end: '03.22:15'
       }
     ];
-    var monthly = new frames.CreateFrame(timeFrames[0]);
     var referenceDate = new Date('2014-12-02T13:01+01:00');
     var testStartDate = new Date('2014-12-01T12:15+01:00');
+    var monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2014-12-01T10:15+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.startDate).to.be(null);
+
+    referenceDate = new Date('2014-12-04T10:15+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.startDate).to.be(null);
+  });
+
+  it('should set start date of overflown "monthly" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'monthly',
+        start: '28.12:15',
+        end: '02.22:15'
+      }
+    ];
+    var referenceDate = new Date('2015-01-01T13:01+01:00');
+    var testStartDate = new Date('2014-12-28T12:15+01:00');
+    var monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.startDate.getTime()).to.be(testStartDate.getTime());
+
+    referenceDate = new Date('2015-02-03T13:01+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.startDate).to.be(null);
+
+    referenceDate = new Date('2015-02-27T13:01+01:00');
+    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    expect(monthly.startDate).to.be(null);
   });
 });
 
