@@ -9,13 +9,14 @@ calc.copyDate = function(src, dest){
 };
 
 calc.checkArgs = function(args){
-  var argArr = Array.prototype.slice.call(args);
-  if (argArr.length < 2) {
+  if (args.length < 2) {
     throw new Error('calculateDueDate() function must have at least 2 arguments');
   }
-  var date = new Date();
-  if (!date.isPrototypeOf(argArr[0])){
+  if (!(args[0] instanceof Date)){
     throw new Error('submitDate argument must be a date object');
+  }
+  if (typeof args[1] !== 'number'){
+    throw new Error('turnaroundTime argument must be a number');
   }
 };
 
