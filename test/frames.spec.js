@@ -209,7 +209,7 @@ describe('Create frames', function(){
         end: '12:15'
       }
     ];
-    var daily = new frames.CreateFrame(timeFrames[0]);
+    var daily = frames.createFrame(timeFrames[0]);
     expect(daily.type).to.be('daily');
     expect(daily.startTime).to.be(9 * 60 + 15); // daily start measured in minutes
     expect(daily.length).to.be(3 * 60 * msInMin); //length measured in milliseconds
@@ -221,7 +221,7 @@ describe('Create frames', function(){
         end: '09:15'
       }
     ];
-    daily = new frames.CreateFrame(timeFrames[0]);
+    daily = frames.createFrame(timeFrames[0]);
     expect(daily.type).to.be('daily');
     expect(daily.startTime).to.be(17 * 60 + 15);
     expect(daily.length).to.be(16 * 60 * msInMin);
@@ -235,7 +235,7 @@ describe('Create frames', function(){
         end: '02.12:15'
       }
     ];
-    var weekly = new frames.CreateFrame(timeFrames[0]);
+    var weekly = frames.createFrame(timeFrames[0]);
     expect(weekly.type).to.be('weekly');
     expect(weekly.startDay).to.be(1);
     expect(weekly.startTime).to.be(9 * 60 + 15);
@@ -248,7 +248,7 @@ describe('Create frames', function(){
         end: '01.09:15'
       }
     ];
-    weekly = new frames.CreateFrame(timeFrames[0]);
+    weekly = frames.createFrame(timeFrames[0]);
     expect(weekly.length).to.be(7 * 24 * 60 * msInMin - 3 * 60 * msInMin);
 
     timeFrames = [
@@ -258,7 +258,7 @@ describe('Create frames', function(){
         end: '00.09:15' // Sun
       }
     ];
-    weekly = new frames.CreateFrame(timeFrames[0]);
+    weekly = frames.createFrame(timeFrames[0]);
     expect(weekly.length).to.be(6 * 24 * 60 * msInMin - 3 * 60 * msInMin);
   });
 
@@ -270,7 +270,7 @@ describe('Create frames', function(){
         end: '02.22:15'
       }
     ];
-    var monthly = new frames.CreateFrame(timeFrames[0]);
+    var monthly = frames.createFrame(timeFrames[0]);
     expect(monthly.type).to.be('monthly');
     expect(monthly.startDay).to.be(1);
     expect(monthly.startTime).to.be(12 * 60 + 15);
@@ -283,7 +283,7 @@ describe('Create frames', function(){
         end: '01.22:15'
       }
     ];
-    monthly = new frames.CreateFrame(timeFrames[0]);
+    monthly = frames.createFrame(timeFrames[0]);
     expect(monthly.length).to.be((10) * 60 * msInMin);
 
     timeFrames = [
@@ -294,7 +294,7 @@ describe('Create frames', function(){
       }
     ];
     var referenceDate = new Date('2014-12-05T10:00+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.lastDayOfMonth()).to.be(31);
     expect(monthly.length).to.be((31 * 24) * 60 * msInMin - 10 * 60 * msInMin);
 
@@ -306,7 +306,7 @@ describe('Create frames', function(){
       }
     ];
     referenceDate = new Date('2014-12-05T10:00+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.length).to.be((30 * 24) * 60 * msInMin + 3 * 60 * msInMin);
   });
 
@@ -318,7 +318,7 @@ describe('Create frames', function(){
         end: '2014-12-26T12:15+01:00'
       }
     ];
-    var dates = new frames.CreateFrame(timeFrames[0]);
+    var dates = frames.createFrame(timeFrames[0]);
     expect(dates.type).to.be('dates');
     expect(dates.length).to.be((24 * 2 + 2) * 60 * msInMin);
 
@@ -334,15 +334,15 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-05T09:30+01:00');
     var testStartDate = new Date('2014-12-05T09:15+01:00');
-    var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-05T09:14+01:00');
-    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate).to.be(null);
 
     referenceDate = new Date('2014-12-05T12:01+01:00');
-    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate).to.be(null);
   });
 
@@ -356,16 +356,16 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-05T19:30+01:00');
     var testStartDate = new Date('2014-12-05T17:00+01:00');
-    var daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-05T08:30+01:00');
     testStartDate = new Date('2014-12-04T17:00+01:00');
-    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-05T14:00+01:00');
-    daily = new frames.CreateFrame(timeFrames[0], referenceDate);
+    daily = frames.createFrame(timeFrames[0], referenceDate);
     expect(daily.startDate).to.be(null);
   });
 
@@ -379,15 +379,15 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-05T13:01+01:00');
     var testStartDate = new Date('2014-12-05T12:15+01:00');
-    var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-05T11:01+01:00');
-    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate).to.be(null);
 
     referenceDate = new Date('2014-12-06T14:16+01:00');
-    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate).to.be(null);
   });
 
@@ -401,15 +401,15 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-08T13:01+01:00');
     var testStartDate = new Date('2014-12-06T12:15+01:00');
-    var weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-05T13:01+01:00');
-    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate).to.be(null);
 
     referenceDate = new Date('2014-12-10T13:01+01:00'); // Wed
-    weekly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    weekly = frames.createFrame(timeFrames[0], referenceDate);
     expect(weekly.startDate).to.be(null);
   });
 
@@ -423,15 +423,15 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2014-12-02T13:01+01:00');
     var testStartDate = new Date('2014-12-01T12:15+01:00');
-    var monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2014-12-01T10:15+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate).to.be(null);
 
     referenceDate = new Date('2014-12-04T10:15+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate).to.be(null);
   });
 
@@ -445,15 +445,15 @@ describe('Create frames', function(){
     ];
     var referenceDate = new Date('2015-01-01T13:01+01:00');
     var testStartDate = new Date('2014-12-28T12:15+01:00');
-    var monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    var monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate.getTime()).to.be(testStartDate.getTime());
 
     referenceDate = new Date('2015-02-03T13:01+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate).to.be(null);
 
     referenceDate = new Date('2015-02-27T13:01+01:00');
-    monthly = new frames.CreateFrame(timeFrames[0], referenceDate);
+    monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate).to.be(null);
   });
 });

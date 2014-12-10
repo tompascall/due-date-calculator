@@ -479,7 +479,7 @@ DatesFrame.prototype.setFrameLength = function(frame) {
   return (endDate.getTime() - startDate.getTime());
 };
 
-frames.CreateFrame = function(frame, referenceDate) {
+frames.createFrame = function(frame, referenceDate) {
   switch(frame.type){
     case 'daily':
       return new DailyFrame(frame, referenceDate);

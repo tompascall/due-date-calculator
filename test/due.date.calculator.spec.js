@@ -5,6 +5,7 @@
 var expect = require('expect.js');
 var calc = require('../src/due.date.calculator.js');
 var helper = require('../lib/testHelpers.js');
+var msInMin = 1000 * 60 * 60;
 
 describe('Validate arguments', function(){
   it('should check that calculateDueDate() function has been called with at least 2 arguments', function(){
@@ -48,11 +49,32 @@ describe('Validate arguments', function(){
 });
 
 describe('Calculate due date', function(){
+  var submitDate = new Date('2014-12-05T12:15:35+01:00');
+
   it('should calculate due date if turnaround time equals zero', function(){
-    var submitDate = new Date('2014-12-10T12:15+01:00');
     var turnaroundTime = 0;
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime);
     expect(dueDate.getTime()).to.be(submitDate.getTime());
+  });
+
+  it('should calculate due date if there are no timeframes', function(){
+    var turnaroundTime = 60; // minutes
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.be(submitDate.getTime() + 60 * msInMin);
+  });
+
+  it('should calculate due date if there is only one time frame and submit date is in the frame', function(){
+    var turnaroundTime = 10;
+    var timeFrames = [
+    {   name: 'foo',
+        type: 'daily',
+        start: '12:00',
+        end: '12:30'
+      }
+    ];
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    var testDate = new Date('2014-12-10T12:40+01:00');
+    expect(dueDate.getTime()).to.be(testDate.getTime());
   });
 });
 

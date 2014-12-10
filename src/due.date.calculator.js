@@ -5,6 +5,8 @@
 var calc = {};
 var frame = require('./frames.js');
 
+calc.msInMin = 1000 * 60 * 60;
+
 calc.cloneDate = function(date){
   var clone = new Date();
   clone.setTime(date.getTime());
@@ -53,6 +55,10 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   calc.checkArgs(arguments);
   var dueDate = calc.cloneDate(submitDate);
   if (turnaroundTime === 0) return dueDate;
+  if (timeFrames === undefined) {
+    dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
+    return dueDate;
+  }
 };
 
 module.exports = calc;
