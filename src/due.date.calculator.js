@@ -3,6 +3,7 @@
 'use strict';
 
 var calc = {};
+var frame = require('./frames.js');
 
 calc.cloneDate = function(date){
   var clone = new Date();
@@ -32,14 +33,26 @@ calc.checkArgTurnaroundTime = function(args) {
   }
 };
 
+calc.checkTimeFrames = function(args) {
+  try {
+    frame.validate(args[2]);
+  }
+  catch(e) {
+    throw new Error('something went wrong: ' + e.message);
+  }
+};
+
 calc.checkArgs = function(args){
   calc.checkArgsNumber(args);
   calc.checkArgSubmitDate(args);
   calc.checkArgTurnaroundTime(args);
+  calc.checkTimeFrames(args);
 };
 
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   calc.checkArgs(arguments);
+  var dueDate = calc.cloneDate(submitDate);
+  if (turnaroundTime === 0) return dueDate;
 };
 
 module.exports = calc;

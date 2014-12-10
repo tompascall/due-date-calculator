@@ -5,7 +5,7 @@
 var frames = {};
 
 frames.errorMissing = function(){
-  throw new Error('TimeFrames argument missing or not an array');
+  throw new Error('TimeFrames argument is not an array');
 };
 
 frames.checkObjects = function(timeFrames){
@@ -187,7 +187,7 @@ frames.checkValues = function(timeFrames){
 };
 
 frames.validate = function(timeFrames){
-  if (timeFrames !== null && timeFrames !== undefined) {
+  if (timeFrames === undefined) return;
     if (Array.isArray(timeFrames)) {
       frames.checkObjects(timeFrames);
       frames.checkKeys(timeFrames);
@@ -195,7 +195,6 @@ frames.validate = function(timeFrames){
       frames.checkValues(timeFrames);
       return true;
     }
-  }
   frames.errorMissing();
 };
 

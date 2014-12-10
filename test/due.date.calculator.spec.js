@@ -38,5 +38,21 @@ describe('Validate arguments', function(){
       expect().fail();
     }
   });
+
+  it('should throw exception if timeFrames validation fails', function(){
+    var submitDate = new Date();
+    var turnaroundTime = 1;
+    var timeFrames = {};
+    expect(calc.calculateDueDate).withArgs(submitDate, turnaroundTime, timeFrames).to.throwException();
+  });
+});
+
+describe('Calculate due date', function(){
+  it('should calculate due date if turnaround time equals zero', function(){
+    var submitDate = new Date('2014-12-10T12:15+01:00');
+    var turnaroundTime = 0;
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime);
+    expect(dueDate.getTime()).to.be(submitDate.getTime());
+  });
 });
 

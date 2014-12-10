@@ -14,9 +14,9 @@ describe('Validate frames', function(){
   });
 
   it('should throw exception ' +
-    'if timeFrames parameter missing or not an array', function(){
-    var timeFrames;
-    var message = 'TimeFrames argument missing or not an array';
+    'if timeFrames parameter is not an array', function(){
+    var timeFrames = {};
+    var message = 'TimeFrames argument is not an array';
     if (!helper.testExceptionMessage(message, frames.validate, timeFrames)) {
       expect().fail();
     }
