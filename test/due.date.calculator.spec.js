@@ -31,6 +31,12 @@ describe('Validate arguments', function(){
     if (!helper.testExceptionMessage(message, calc.calculateDueDate, submitDate, turnaroundTime)) {
       expect().fail();
     }
+
+    turnaroundTime = 1.2;
+    message = 'turnaroundTime argument must be an integer number';
+    if (!helper.testExceptionMessage(message, calc.calculateDueDate, submitDate, turnaroundTime)) {
+      expect().fail();
+    }
   });
 });
 
