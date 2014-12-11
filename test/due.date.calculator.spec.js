@@ -105,5 +105,27 @@ describe('Calculate due date', function(){
     var testDate = new Date('2014-12-05T12:35:35+01:00');
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
+
+  it('should calculate due date if there is one daily time frame and a weekly time frame', function(){
+    var turnaroundTime = 2;
+    var timeFrames = [
+      { name: 'non-working-hours',
+        type: 'daily',
+        start: '17:00',
+        end: '09:00'
+      },
+      { name: 'weekend',
+        type: 'weekly',
+        start: '06.00:00',
+        end: '01.00:00'
+      }
+
+    ];
+    var submitDate = new Date('2014-12-05T16:59:35+01:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    var testDate = new Date('2014-12-08T09:01:35+01:00');
+    console.log(dueDate.toString());
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+  });
 });
 
