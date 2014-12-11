@@ -3,7 +3,7 @@
 'use strict';
 
 var calc = {};
-var frame = require('./frames.js');
+var frames = require('./frames.js');
 
 calc.msInMin = 1000 * 60 * 60;
 
@@ -37,7 +37,7 @@ calc.checkArgTurnaroundTime = function(args) {
 
 calc.checkTimeFrames = function(args) {
   try {
-    frame.validate(args[2]);
+    frames.validate(args[2]);
   }
   catch(e) {
     throw new Error('something went wrong: ' + e.message);
@@ -51,6 +51,10 @@ calc.checkArgs = function(args){
   calc.checkTimeFrames(args);
 };
 
+calc.getRest = function(date) {
+  return date.getSeconds() * 1000 + date.getMilliseconds();
+};
+
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   calc.checkArgs(arguments);
   var dueDate = calc.cloneDate(submitDate);
@@ -59,6 +63,20 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
     dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
     return dueDate;
   }
+  var actualFrame;
+  var rest = calc.getRest(dueDate);
+  /*jshint -W083 */
+  for (var i = 0; i < turnaroundTime; i++) {
+    timeFrames.forEach(function(frame){
+      actualFrame = frames.createFrame(frame, dueDate);
+      if (actualFrame.startDate !== null) {
+        dueDate.setTime(actualFrame.endDate.getTime());
+      }
+    });
+    dueDate.setMinutes(dueDate.getMinutes() + 1);
+  }
+  dueDate.setTime(dueDate.getTime() + rest);
+  return dueDate;
 };
 
 module.exports = calc;

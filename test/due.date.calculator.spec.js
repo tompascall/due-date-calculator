@@ -63,7 +63,7 @@ describe('Calculate due date', function(){
     expect(dueDate.getTime()).to.be(submitDate.getTime() + 60 * msInMin);
   });
 
-  it('should calculate due date if there is only one time frame and submit date is in the frame', function(){
+  it('should calculate due date if there is only one daily time frame and submit date is in the frame', function(){
     var turnaroundTime = 10;
     var timeFrames = [
     {   name: 'foo',
@@ -73,7 +73,19 @@ describe('Calculate due date', function(){
       }
     ];
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
-    var testDate = new Date('2014-12-10T12:40+01:00');
+    var testDate = new Date('2014-12-05T12:40:35+01:00');
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+
+    timeFrames = [
+    {   name: 'foo',
+        type: 'daily',
+        start: '23:00',
+        end: '01:00'
+      }
+    ];
+    submitDate = new Date('2014-12-05T23:55:35+01:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    testDate = new Date('2014-12-06T01:10:35+01:00');
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
 });

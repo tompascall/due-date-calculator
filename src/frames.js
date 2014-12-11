@@ -207,6 +207,7 @@ function Frame(frame, referenceDate) {
   this.referenceDate = this.cloneDate(referenceDate);
   this.length = this.setFrameLength(frame);
   this.startDate = this.setStartDate(referenceDate);
+  this.endDate = this.setEndDate();
 }
 
 Frame.prototype.setFrameStartTime = function(){
@@ -227,6 +228,15 @@ Frame.prototype.setStartDate = function(){
 };
 
 Frame.prototype.setFrameLength = function(){
+};
+
+Frame.prototype.setEndDate = function() {
+  var endDate = new Date();
+  if (this.startDate) {
+    endDate.setTime(this.startDate.getTime() + this.length);
+    return endDate;
+  }
+  else return null;
 };
 
 function DailyFrame(frame, referenceDate) {
