@@ -65,7 +65,7 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
   }
   var actualFrame;
   var rest = calc.getRest(dueDate);
-  /*jshint -W083 */
+  /*jshint -W083 */ // we can use forEach within a loop
   for (var i = 0; i < turnaroundTime; i++) {
     timeFrames.forEach(function(frame){
       actualFrame = frames.createFrame(frame, dueDate);
