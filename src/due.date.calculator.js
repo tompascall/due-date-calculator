@@ -55,12 +55,12 @@ calc.getRest = function(date) {
   return date.getSeconds() * 1000 + date.getMilliseconds();
 };
 
-calc.checkFrames = function(timeFrames, dueDate) {
+calc.checkFrames = function(timeFrames, dueDate, rest) {
   var actualFrame;
   timeFrames.forEach(function(frame){
       actualFrame = frames.createFrame(frame, dueDate);
       if (actualFrame.startDate !== null) {
-        dueDate.setTime(actualFrame.endDate.getTime());
+        dueDate.setTime(actualFrame.endDate.getTime() + rest);
         dueDate = calc.checkFrames(timeFrames, dueDate);
       }
     });
@@ -75,14 +75,14 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
     dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
     return dueDate;
   }
-  var actualFrame;
   var rest = calc.getRest(dueDate);
-  /*jshint -W083 */ // we can use forEach within a loop
-  for (var i = 0; i < turnaroundTime; i++) {
-    dueDate = calc.checkFrames(timeFrames, dueDate);
+  for (var i = 1; i <= turnaroundTime; i++) {
+    dueDate = calc.checkFrames(timeFrames, dueDate, rest);
     dueDate.setMinutes(dueDate.getMinutes() + 1);
+    console.log(i, dueDate.toString());
   }
-  dueDate.setTime(dueDate.getTime() + rest);
+  dueDate = calc.checkFrames(timeFrames, dueDate);
+
   return dueDate;
 };
 
