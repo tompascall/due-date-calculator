@@ -72,6 +72,7 @@ var timeFrames = [
 The `calculateDueDate()` method gives back a **Date() object**. It is a method of `calc` object:
 
 ```js
+var calc = require('../src/due.date.calculator.js');
 var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
 ```
 
