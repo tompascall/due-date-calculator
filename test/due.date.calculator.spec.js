@@ -108,7 +108,7 @@ describe('Calculate due date', function(){
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
 
-   it('should calculate due date if there is one daily time frame and a weekly time frame', function(){
+   it('should calculate due date if there are a daily time frame and a weekly time frame', function(){
     var turnaroundTime = 1;
     var timeFrames = [
       { name: 'non-working-hours',
@@ -126,8 +126,28 @@ describe('Calculate due date', function(){
     var submitDate = new Date('2014-12-05T16:59:35+01:00');
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     var testDate = new Date('2014-12-08T09:00:35+01:00');
-    console.log(dueDate.toString());
     expect(dueDate.getTime()).to.be(testDate.getTime());
    });
+
+   it('should calculate due date if there are a monthly frame', function(){
+    var turnaroundTime = 1;
+    var timeFrames = [
+      { name: 'middle time',
+        type: 'monthly',
+        start: '15.00:00',
+        end: '16.00:00'
+      }
+    ];
+    var submitDate = new Date('2014-12-14T23:59:35+01:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    var testDate = new Date('2014-12-16T00:00:35+01:00');
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+
+    submitDate = new Date('2014-12-15T00:00:00+01:00');
+    dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    testDate = new Date('2014-12-16T00:01:00+01:00');
+    console.log(dueDate.toString());
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+  });
 });
 
