@@ -46,7 +46,7 @@ If you give a time frame like this, you have this time frame **every month**. It
 }
 ```
 
-The value of `start` end `end` of "dates" time frame must be valid ISO date string. The `end` date cannot be earlier than the `start` date.
+The value of `start` end `end` of "dates" time frame must be valid [ISO date string](http://www.w3.org/TR/NOTE-datetime). The `end` date cannot be earlier than the `start` date.
 
 ####Using more time frames
 
