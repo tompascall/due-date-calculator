@@ -3,135 +3,103 @@
 'use strict';
 
 var calc = {};
+var frames = require('./frames.js');
 
-calc.copyDate = function(src, dest){
-  dest.setTime(src.getTime());
+calc.msInMin = 1000 * 60 * 60;
+
+calc.cloneDate = function(date){
+  var clone = new Date();
+  clone.setTime(date.getTime());
+  return clone;
 };
 
 
-calc.HandleFrames = function(submitDate, timeFrames){
- this.submitDate = calc.copyDate(submitDate, new Date());
- this.timeFrames = timeFrames;
- this.swags = 0;
-};
-
-calc.Frame = function(frame, date){
-  var startDate = new Date();
-  var endDate = new Date();
-  calc.copyDate(date, startDate);
-  calc.copyDate(date, endDate);
-
-  this.startDate = this.setStartDate(startDate, frame);
-  this.endDate = this.setEndDate(endDate, frame);
-};
-
-calc.Frame.prototype.setDay = function(date, day) {
-  if (date.getDay() !== 0) {
-    date.setDate(date.getDate() - date.getDay() + day);
-  }
-  else if (day !== 0) {
-    date.setDate(date.getDate() - 7 + day);
+calc.checkArgsNumber = function(args) {
+  if (args.length < 2) {
+    throw new Error('calculateDueDate() function must have at least 2 arguments');
   }
 };
 
-calc.Frame.prototype.setStartDate = function(startDate, frame){
+calc.checkArgSubmitDate = function(args) {
+  if (!(args[0] instanceof Date)){
+    throw new Error('submitDate argument must be a date object');
+  }
+};
 
-  switch(frame.unit){
-    case 'hour':
-      var testStartDate = new Date();
-      var testEndDate = new Date();
-      calc.copyDate(startDate, testStartDate);
-      calc.copyDate(startDate, testEndDate);
+calc.checkArgTurnaroundTime = function(args) {
+  if (typeof args[1] !== 'number'){
+    throw new Error('turnaroundTime argument must be a number');
+  }
+  if (Math.floor(args[1]) !== args[1]) {
+    throw new Error('turnaroundTime argument must be an integer number');
+  }
+};
 
-      testStartDate.setHours(frame.start, 0, 0, 0);
-      testEndDate.setTime(testStartDate.getTime() + frame.length);
+calc.checkTimeFrames = function(args) {
+  try {
+    frames.validate(args[2]);
+  }
+  catch(e) {
+    throw new Error('something went wrong: ' + e.message);
+  }
+};
 
-      if (startDate.getTime() > testStartDate.getTime()) {
-        startDate = testStartDate;
+calc.checkArgs = function(args){
+  calc.checkArgsNumber(args);
+  calc.checkArgSubmitDate(args);
+  calc.checkArgTurnaroundTime(args);
+  calc.checkTimeFrames(args);
+};
+
+calc.getRestTime = function(date) {
+  return date.getSeconds() * 1000 + date.getMilliseconds();
+};
+
+calc.checkFrames = function(timeFrames, dueDate, restTime) {
+  restTime = restTime || 0;
+  var actualFrame;
+  timeFrames.forEach(function(frame){
+      actualFrame = frames.createFrame(frame, dueDate);
+      if (actualFrame.startDate !== null) {
+        dueDate.setTime(actualFrame.endDate.getTime() + restTime);
+        dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
       }
-      else {
-        testEndDate.setHours(testEndDate.getHours() - 24);
-        if (startDate.getTime() < testEndDate.getTime()) {
-          startDate.setHours(testStartDate.getHours() - 24);
-        }
+    });
+  return dueDate;
+};
+
+calc.SubmitDateIsInFrame = function(submitDate, timeFrames){
+  var actualFrame;
+  var result = false;
+  timeFrames.forEach(function(frame){
+      actualFrame = frames.createFrame(frame, submitDate);
+      if (actualFrame.startDate !== null) {
+        result = true;
       }
-
-      break;
-    case 'dayOfWeek':
-      this.setDay(startDate, frame.start);
-      startDate.setHours(0, 0, 0, 0);
-      break;
-    case 'date':
-      startDate = new Date(frame.start);
-      break;
-    default:
-      throw new Error('invalid frame unit');
-  }
-  return startDate;
-};
-
-calc.Frame.prototype.setEndDate = function(endDate, frame) {
-  endDate.setTime(this.startDate.getTime() + frame.length);
-  return endDate;
-};
-
-calc.HandleFrames.prototype.isInFrame = function(frame, date){
-  var frameDates = new calc.Frame(frame, date);
-
-  if (date.getTime() > frameDates.startDate.getTime() &&
-    date.getTime() < frameDates.endDate.getTime()) {
-    return frameDates;
-  }
-  else return false;
-};
-
-calc.HandleFrames.prototype.getSwagLength = function(frame, date){
-  return date.getTime() - frame.startDate.getTime();
-};
-
-calc.HandleFrames.prototype.improveStrip = function(date){
-  var frame;
-  var frameDates;
-  var i = 0;
-  var firstFrame = true;
-
-  do {
-    frame = this.timeFrames[i];
-    frameDates = this.isInFrame(frame, date);
-    if (frameDates) {
-      if (firstFrame) {
-        this.swags += this.getSwagLength(frameDates, date);
-        firstFrame = false;
-      }
-      date.setTime(frameDates.endDate.getTime());
-      i = 0;
-    }
-    else {
-      i++;
-    }
-  }
-  while (i < this.timeFrames.length);
+    });
+  return result;
 };
 
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
-  var dueDate = new Date();
-  var msInHour = 1000 * 60 * 60;
-  this.copyDate(submitDate, dueDate);
+  calc.checkArgs(arguments);
+  var dueDate = calc.cloneDate(submitDate);
   if (turnaroundTime === 0) return dueDate;
-  var handleFrames = new calc.HandleFrames(submitDate, timeFrames);
-  for (var i = 0; i < turnaroundTime; i++){
-    dueDate.setHours(dueDate.getHours() + 1); // step to next hour
-    handleFrames.improveStrip(dueDate);
+  if (timeFrames === undefined) {
+    dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
+    return dueDate;
   }
-
-  while (Math.floor(handleFrames.swags / msInHour) > 0) {
-    handleFrames.swags -= msInHour;
-    dueDate.setHours(dueDate.getHours() + 1); // step to next hour
-    handleFrames.improveStrip(dueDate);
+  var restTime;
+  if (calc.SubmitDateIsInFrame(submitDate, timeFrames)) {
+    restTime = 0;
   }
-
-
-  dueDate.setTime(dueDate.getTime() + (handleFrames.swags % msInHour));
+  else {
+    restTime = calc.getRestTime(dueDate);
+  }
+  for (var i = 1; i <= turnaroundTime; i++) {
+    dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
+    dueDate.setMinutes(dueDate.getMinutes() + 1);
+  }
+  dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
   return dueDate;
 };
 
