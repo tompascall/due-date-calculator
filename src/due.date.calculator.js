@@ -51,17 +51,18 @@ calc.checkArgs = function(args){
   calc.checkTimeFrames(args);
 };
 
-calc.getRest = function(date) {
+calc.getRestTime = function(date) {
   return date.getSeconds() * 1000 + date.getMilliseconds();
 };
 
 calc.checkFrames = function(timeFrames, dueDate, rest) {
+  rest = rest || 0;
   var actualFrame;
   timeFrames.forEach(function(frame){
       actualFrame = frames.createFrame(frame, dueDate);
       if (actualFrame.startDate !== null) {
         dueDate.setTime(actualFrame.endDate.getTime() + rest);
-        dueDate = calc.checkFrames(timeFrames, dueDate);
+        dueDate = calc.checkFrames(timeFrames, dueDate, rest);
       }
     });
   return dueDate;
@@ -75,13 +76,13 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
     dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
     return dueDate;
   }
-  var rest = calc.getRest(dueDate);
+  var rest = calc.getRestTime(dueDate);
   for (var i = 1; i <= turnaroundTime; i++) {
     dueDate = calc.checkFrames(timeFrames, dueDate, rest);
     dueDate.setMinutes(dueDate.getMinutes() + 1);
     console.log(i, dueDate.toString());
   }
-  dueDate = calc.checkFrames(timeFrames, dueDate);
+  dueDate = calc.checkFrames(timeFrames, dueDate, rest);
 
   return dueDate;
 };

@@ -93,7 +93,7 @@ describe('Calculate due date', function(){
 
   it('should calculate due date if there is only one daily time frame ' +
        'and submit date is before the frame', function(){
-    var turnaroundTime = 5;
+    var turnaroundTime = 1;
     var timeFrames = [
     {   name: 'foo',
         type: 'daily',
@@ -101,7 +101,7 @@ describe('Calculate due date', function(){
         end: '12:30'
       }
     ];
-    var submitDate = new Date('2014-12-05T11:55:35+01:00');
+    var submitDate = new Date('2014-12-05T11:59:35+01:00');
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     var testDate = new Date('2014-12-05T12:30:35+01:00');
     console.log(dueDate.toString());
