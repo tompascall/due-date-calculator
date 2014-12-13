@@ -2,9 +2,9 @@
 
 This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames)` method for calculating due date, folowing the rules below:
 
-- submitDate must be a `Date` object
+- `submitDate` must be a `Date` object
 - `turnaroundTime` must be given in **minutes**
-- `timeFrames` argument is an array, that contains time frame objects. For the moment there are 4 types of time frames, `daily`, `weekly`, `monthly`, `dates`, you can distinct them by the `type` property of the frame object.
+- `timeFrames` argument must be an array, that contains time frame objects. For the moment there are 4 types of time frames, `daily`, `weekly`, `monthly`, `dates`, you can distinct them by the `type` property of the frame object.
 
 ####Daily time frame object
 ```js
@@ -14,7 +14,7 @@ This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames
   end: '09:00' // the format is "hh:mm"
 }
 ```
-If you give a time frame like this, you have this time frame **every day**. It can overflow to the next day, if the `start` time is later than the `end` time, like in the example above.
+If you give a time frame like this, you have this time frame **every day**. It can overflow into the next day, if the `start` time is later than the `end` time, like in the example above.
 
 ####Weekly time frame object
 ```js
@@ -25,7 +25,7 @@ If you give a time frame like this, you have this time frame **every day**. It c
   end: '01.00:00' // the format is dd.hh:mm
 }
 ```
-If you give a time frame like this, you have this time frame **every week**. It can overflow to the next week, if the day of the `start` date is later than the day of the `end` time, like in the example above.
+If you give a time frame like this, you have this time frame **every week**. It can overflow into the next week, if the day of the `start` date is later than the day of the `end` time, like in the example above.
 
 ####Monthly time frame object
 ```js
@@ -35,7 +35,7 @@ If you give a time frame like this, you have this time frame **every week**. It 
   end: '16.00:00' // format is dd.hh.mm
 }
 ```
-If you give a time frame like this, you have this time frame **every month**. It means that the max. start or the end day of the frame must be 28, because every month has at least 28 days.
+If you give a time frame like this, you have this time frame **every month**. It means that the max. start or the end day of the frame must be 28, because every month has at least 28 days. It can overflow into the next month, if the day of the `start` date is later than the day of the `end` time.
 
 ####Dates time frame object
 ```js
