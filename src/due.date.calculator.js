@@ -55,17 +55,29 @@ calc.getRestTime = function(date) {
   return date.getSeconds() * 1000 + date.getMilliseconds();
 };
 
-calc.checkFrames = function(timeFrames, dueDate, rest) {
-  rest = rest || 0;
+calc.checkFrames = function(timeFrames, dueDate, restTime) {
+  restTime = restTime || 0;
   var actualFrame;
   timeFrames.forEach(function(frame){
       actualFrame = frames.createFrame(frame, dueDate);
       if (actualFrame.startDate !== null) {
-        dueDate.setTime(actualFrame.endDate.getTime() + rest);
-        dueDate = calc.checkFrames(timeFrames, dueDate, rest);
+        dueDate.setTime(actualFrame.endDate.getTime() + restTime);
+        dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
       }
     });
   return dueDate;
+};
+
+calc.SubmitDateIsInFrame = function(submitDate, timeFrames){
+  var actualFrame;
+  var result = false;
+  timeFrames.forEach(function(frame){
+      actualFrame = frames.createFrame(frame, submitDate);
+      if (actualFrame.startDate !== null) {
+        result = true;
+      }
+    });
+  return result;
 };
 
 calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
@@ -76,13 +88,19 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
     dueDate.setTime(dueDate.getTime() + turnaroundTime * calc.msInMin);
     return dueDate;
   }
-  var rest = calc.getRestTime(dueDate);
+  var restTime;
+  if (calc.SubmitDateIsInFrame(submitDate, timeFrames)) {
+    restTime = 0;
+  }
+  else {
+    restTime = calc.getRestTime(dueDate);
+  }
   for (var i = 1; i <= turnaroundTime; i++) {
-    dueDate = calc.checkFrames(timeFrames, dueDate, rest);
+    dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
     dueDate.setMinutes(dueDate.getMinutes() + 1);
     console.log(i, dueDate.toString());
   }
-  dueDate = calc.checkFrames(timeFrames, dueDate, rest);
+  dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
 
   return dueDate;
 };
