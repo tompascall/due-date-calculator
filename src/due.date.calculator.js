@@ -101,7 +101,6 @@ calc.calculateDueDate = function(submitDate, turnaroundTime, timeFrames){
     console.log(i, dueDate.toString());
   }
   dueDate = calc.checkFrames(timeFrames, dueDate, restTime);
-
   return dueDate;
 };
 

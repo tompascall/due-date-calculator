@@ -146,6 +146,21 @@ describe('Calculate due date', function(){
     submitDate = new Date('2014-12-15T00:00:00+01:00');
     dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     testDate = new Date('2014-12-16T00:01:00+01:00');
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+  });
+
+  it('should calculate due date if there are a dates frame', function(){
+    var turnaroundTime = 1;
+    var timeFrames = [
+      { name: 'foo',
+        type: 'dates',
+        start: '2015-02-03T13:00+01:00',
+        end: '2015-02-04T14:01+01:00'
+      }
+    ];
+    var submitDate = new Date('2015-02-03T12:59:35+01:00');
+    var testDate = new Date('2015-02-04T14:01:35+01:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
     console.log(dueDate.toString());
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });

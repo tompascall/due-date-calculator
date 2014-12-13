@@ -479,14 +479,21 @@ DatesFrame.prototype.constructor = DatesFrame;
 DatesFrame.prototype.setFrameLength = function(frame) {
   var startDate = new Date(frame.start);
   var endDate = new Date(frame.end);
-  startDate.setSeconds(0, 0); // we don't deal with seconds & ms
-  endDate.setSeconds(0, 0);
+  //startDate.setSeconds(0, 0); // we don't deal with seconds & ms
+  //endDate.setSeconds(0, 0);
   return (endDate.getTime() - startDate.getTime());
 };
 
 DatesFrame.prototype.setStartDate = function(referenceDate){
-  var date = new Date(this.start);
-  return date;
+  var helperFrameStartDate = new Date(this.start);
+  var helperFrameEndDate = new Date(this.end);
+  if (referenceDate !== undefined) {
+    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+      referenceDate.getTime() < helperFrameEndDate.getTime()) {
+        return helperFrameStartDate;
+    }
+    else return null;
+  }
 };
 
 DatesFrame.prototype.setEndDate = function(referenceDate){
