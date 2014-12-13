@@ -456,6 +456,20 @@ describe('Create frames', function(){
     monthly = frames.createFrame(timeFrames[0], referenceDate);
     expect(monthly.startDate).to.be(null);
   });
+
+  it('should set start date of "dates" frames by referenceDate', function(){
+    var timeFrames = [
+      { name: 'foo',
+        type: 'dates',
+        start: '2015-02-03T13:01+01:00',
+        end: '2015-02-04T13:01+01:00'
+      }
+    ];
+    var referenceDate = new Date('2015-02-03T15:01+01:00');
+    var testStartDate = new Date('2015-02-03T13:01+01:00');
+    var dates = frames.createFrame(timeFrames[0], referenceDate);
+    expect(dates.startDate.getTime()).to.be(testStartDate.getTime());
+  });
 });
 
 

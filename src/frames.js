@@ -201,6 +201,8 @@ frames.validate = function(timeFrames){
 function Frame(frame, referenceDate) {
   this.name = frame.name;
   this.type = frame.type;
+  this.start = frame.start;
+  this.end = frame.end;
   this.msInMin = 60 * 1000;
   this.startTime = this.setFrameStartTime(frame);
   this.startDay = this.setFrameStartDay(frame);
@@ -480,6 +482,16 @@ DatesFrame.prototype.setFrameLength = function(frame) {
   startDate.setSeconds(0, 0); // we don't deal with seconds & ms
   endDate.setSeconds(0, 0);
   return (endDate.getTime() - startDate.getTime());
+};
+
+DatesFrame.prototype.setStartDate = function(referenceDate){
+  var date = new Date(this.start);
+  return date;
+};
+
+DatesFrame.prototype.setEndDate = function(referenceDate){
+  var date = new Date(this.end);
+  return date;
 };
 
 frames.createFrame = function(frame, referenceDate) {
