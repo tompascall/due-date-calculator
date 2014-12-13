@@ -208,7 +208,7 @@ function Frame(frame, referenceDate) {
   this.startDay = this.setFrameStartDay(frame);
   this.referenceDate = this.cloneDate(referenceDate);
   this.length = this.setFrameLength(frame);
-  this.startDate = this.setStartDate(referenceDate);
+  this.startDate = this.setStartDate();
   this.endDate = this.setEndDate();
 }
 
@@ -268,8 +268,8 @@ DailyFrame.prototype.setFrameLength = function(frame){
   }
 };
 
-DailyFrame.prototype.helperFrameStartDate = function(referenceDate) {
-  var helperFrameStartDate = this.cloneDate(referenceDate);
+DailyFrame.prototype.helperFrameStartDate = function() {
+  var helperFrameStartDate = this.cloneDate(this.referenceDate);
   helperFrameStartDate.setHours(0, 0, 0, 0);
   helperFrameStartDate.setMinutes(this.startTime);
   return helperFrameStartDate;
@@ -281,19 +281,19 @@ DailyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
   return helperFrameEndDate;
 };
 
-DailyFrame.prototype.setStartDate = function(referenceDate) {
-  if (referenceDate !== undefined) {
-    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+DailyFrame.prototype.setStartDate = function() {
+  if (this.referenceDate !== undefined) {
+    var helperFrameStartDate = this.helperFrameStartDate(this.referenceDate);
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
 
-    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
-        referenceDate.getTime() < helperFrameEndDate.getTime()) {
+    if (this.referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+        this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
       return helperFrameStartDate;
     }
     if (helperFrameStartDate.getHours() * 60 + helperFrameStartDate.getMinutes() >
       helperFrameEndDate.getHours() * 60 + helperFrameEndDate.getMinutes()) {
       helperFrameEndDate.setDate(helperFrameEndDate.getDate() - 1);
-      if (referenceDate.getTime() < helperFrameEndDate.getTime()) {
+      if (this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
         helperFrameStartDate.setDate(helperFrameStartDate.getDate() - 1);
         return helperFrameStartDate;
       }
@@ -347,8 +347,8 @@ WeeklyFrame.prototype.setDay = function(date, day) {
   date.setDate(date.getDate() - currentDay + day);
 };
 
-WeeklyFrame.prototype.helperFrameStartDate = function(referenceDate) {
-  var helperFrameStartDate = this.cloneDate(referenceDate);
+WeeklyFrame.prototype.helperFrameStartDate = function() {
+  var helperFrameStartDate = this.cloneDate(this.referenceDate);
   this.setDay(helperFrameStartDate, this.startDay);
   helperFrameStartDate.setHours(0, 0, 0, 0);
   helperFrameStartDate.setMinutes(this.startTime);
@@ -361,16 +361,16 @@ WeeklyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
   return helperFrameEndDate;
 };
 
-WeeklyFrame.prototype.setStartDate = function(referenceDate) {
-  if (referenceDate !== undefined) {
-    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+WeeklyFrame.prototype.setStartDate = function() {
+  if (this.referenceDate !== undefined) {
+    var helperFrameStartDate = this.helperFrameStartDate(this.referenceDate);
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
-    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
-        referenceDate.getTime() < helperFrameEndDate.getTime()) {
+    if (this.referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+        this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
       return helperFrameStartDate;
     }
     if (helperFrameStartDate.getDay() > helperFrameEndDate.getDay()) {
-      if (referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * 60 * this.msInMin)) {
+      if (this.referenceDate.getTime() < (helperFrameEndDate.getTime() - 7 * 24 * 60 * this.msInMin)) {
         helperFrameStartDate.setDate(helperFrameStartDate.getDate() - 7);
         return helperFrameStartDate;
       }
@@ -436,8 +436,8 @@ MonthlyFrame.prototype.setFrameLength = function(frame) {
   }
 };
 
-MonthlyFrame.prototype.helperFrameStartDate = function(referenceDate) {
-  var helperFrameStartDate = this.cloneDate(referenceDate);
+MonthlyFrame.prototype.helperFrameStartDate = function() {
+  var helperFrameStartDate = this.cloneDate(this.referenceDate);
   helperFrameStartDate.setDate(this.startDay);
   helperFrameStartDate.setHours(0, 0, 0, 0);
   helperFrameStartDate.setMinutes(this.startTime);
@@ -450,17 +450,17 @@ MonthlyFrame.prototype.helperFrameEndDate = function(helperFrameStartDate) {
   return helperFrameEndDate;
 };
 
-MonthlyFrame.prototype.setStartDate = function(referenceDate) {
-  if (referenceDate !== undefined) {
-    var helperFrameStartDate = this.helperFrameStartDate(referenceDate);
+MonthlyFrame.prototype.setStartDate = function() {
+  if (this.referenceDate !== undefined) {
+    var helperFrameStartDate = this.helperFrameStartDate(this.referenceDate);
     var helperFrameEndDate = this.helperFrameEndDate(helperFrameStartDate);
-    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
-        referenceDate.getTime() < helperFrameEndDate.getTime()) {
+    if (this.referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+        this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
       return helperFrameStartDate;
     }
     if (helperFrameStartDate.getDate() > helperFrameEndDate.getDate()) {
       helperFrameEndDate.setMonth(helperFrameEndDate.getMonth() - 1);
-      if (referenceDate.getTime() < helperFrameEndDate.getTime()) {
+      if (this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
         helperFrameStartDate.setMonth(helperFrameStartDate.getMonth() - 1);
         return helperFrameStartDate;
       }
@@ -482,12 +482,12 @@ DatesFrame.prototype.setFrameLength = function(frame) {
   return (endDate.getTime() - startDate.getTime());
 };
 
-DatesFrame.prototype.setStartDate = function(referenceDate){
+DatesFrame.prototype.setStartDate = function(){
   var helperFrameStartDate = new Date(this.start);
   var helperFrameEndDate = new Date(this.end);
-  if (referenceDate !== undefined) {
-    if (referenceDate.getTime() >= helperFrameStartDate.getTime() &&
-      referenceDate.getTime() < helperFrameEndDate.getTime()) {
+  if (this.referenceDate !== undefined) {
+    if (this.referenceDate.getTime() >= helperFrameStartDate.getTime() &&
+      this.referenceDate.getTime() < helperFrameEndDate.getTime()) {
         return helperFrameStartDate;
     }
     else return null;
