@@ -479,8 +479,6 @@ DatesFrame.prototype.constructor = DatesFrame;
 DatesFrame.prototype.setFrameLength = function(frame) {
   var startDate = new Date(frame.start);
   var endDate = new Date(frame.end);
-  //startDate.setSeconds(0, 0); // we don't deal with seconds & ms
-  //endDate.setSeconds(0, 0);
   return (endDate.getTime() - startDate.getTime());
 };
 
@@ -494,11 +492,6 @@ DatesFrame.prototype.setStartDate = function(referenceDate){
     }
     else return null;
   }
-};
-
-DatesFrame.prototype.setEndDate = function(referenceDate){
-  var date = new Date(this.end);
-  return date;
 };
 
 frames.createFrame = function(frame, referenceDate) {

@@ -164,5 +164,36 @@ describe('Calculate due date', function(){
     console.log(dueDate.toString());
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
+
+  it('should calculate due date if there are all kinds of frames', function(){
+    var turnaroundTime = 1;
+    var timeFrames = [
+      { name: 'non-working-hours',
+        type: 'daily',
+        start: '17:00',
+        end: '09:00'
+      },
+      { name: 'weekend',
+        type: 'weekly',
+        start: '06.00:00',
+        end: '01.00:00'
+      },
+      { name: 'middle time',
+        type: 'monthly',
+        start: '15.00:00',
+        end: '16.00:00'
+      },
+      { name: 'foo',
+        type: 'dates',
+        start: '2014-12-15T13:00+01:00',
+        end: '2014-12-16T17:01+01:00'
+      }
+    ];
+    var submitDate = new Date('2014-12-12T16:59:35+01:00');
+    var testDate = new Date('2014-12-17T09:00:35+01:00');
+    var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    console.log(dueDate.toString());
+    expect(dueDate.getTime()).to.be(testDate.getTime());
+  });
 });
 
