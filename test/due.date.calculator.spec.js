@@ -190,6 +190,7 @@ describe('Calculate due date', function(){
     var submitDate = new Date('2014-12-12T16:59:35+01:00');
     var testDate = new Date('2014-12-17T09:00:35+01:00');
     var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+    console.log(dueDate.toString());
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
 });

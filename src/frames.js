@@ -156,8 +156,10 @@ frames.checkMonthlyValues = function(timeFrames) {
     if (frame.type === 'monthly'){
       timeStart = time.exec(frame.start);
       timeEnd = time.exec(frame.end);
-      if (parseInt(timeStart[1]) === 0 || parseInt(timeStart[1]) > 31 ||
+      // days of monthly frame must be smaller than 28
+      if (parseInt(timeStart[1]) === 0 || parseInt(timeStart[1]) > 28 ||
         parseInt(timeStart[2]) > 23 || parseInt(timeStart[3]) > 59 ||
+        parseInt(timeEnd[1]) === 0 || parseInt(timeEnd[1]) > 28 ||
         parseInt(timeEnd[2]) > 23 || parseInt(timeEnd[3]) > 59) {
           throw new Error('the value of "start" end "end" of "monthly" time frame must be valid day and time value');
       }

@@ -2,62 +2,111 @@
 
 This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames)` method for calculating due date, folowing the rules below:
 
-- A submisson can only be during a non time-frame period
-- `turnaroundTime` argument must be given in whole hours
-- `timeFrames` argument is an array, that contains time frame objects. For the moment there are 3 types of time frames, you can distinct them by the unit of the frame. **If the unit is**
-  - **`dayOfWeek`**, you can give a starting day of the week, and the length of the frame in milliseconds. If you give a time frame like this, you have this timeframe every week
-  - **`restingHours`**, you can give a starting hour, and the length of the frame in milliseconds. If you give a time frame like this, you have this timeframe every day
-  - **`date`**, you can give a term by a date string and a length. This frame is not a regular one.
+- submitDate must be a `Date` object
+- `turnaroundTime` must be given in **minutes**
+- `timeFrames` argument is an array, that contains time frame objects. For the moment there are 4 types of time frames, `daily`, `weekly`, `monthly`, `dates`, you can distinct them by the `type` property of the frame object.
 
-When we calculate due date, we count the elapsed time between time frames. The unit of the calculation is in **hour**. It means that we scan the length of `turnaroundTime` per hour, and if we clash with a time frame, we jump over the frame and continue scanning.
+####Daily time frame object
+```js
+{ name: 'non-working-hours', // you can give any name you like
+  type: 'daily',
+  start: '17:00', // the format is "hh:mm"
+  end: '09:00' // the format is "hh:mm"
+}
+```
+If you give a time frame like this, you have this time frame **every day**. It can overflow to the next day, if the `start` time is later than the `end` time, like in the example above.
 
-The `name` key of the timeFrame object is just informative, it is not necessary for the calculation.
+####Weekly time frame object
+```js
+{ name: 'weekend',
+  type: 'weekly',
+  start: '06.00:00', // the format is dd.hh:mm, where dd is the day of the week
+                      // starting from Sunday (00), so 06 means Saturday
+  end: '01.00:00' // the format is dd.hh:mm
+}
+```
+If you give a time frame like this, you have this time frame **every week**. It can overflow to the next week, if the day of the `start` date is later than the day of the `end` time, like in the example above.
 
-For example
+####Monthly time frame object
+```js
+{ name: 'middle time',
+  type: 'monthly',
+  start: '15.00:00', // format is dd.hh:mm, where dd is the day of the month
+  end: '16.00:00' // format is dd.hh.mm
+}
+```
+If you give a time frame like this, you have this time frame **every month**. It means that the max. start or the end day of the frame must be 28, because every month has at least 28 days.
+
+####Dates time frame object
+```js
+{ name: 'foo',
+  type: 'dates',
+  start: '2014-12-15T13:00+01:00',
+  end: '2014-12-16T17:01+01:00'
+}
+```
+
+The value of `start` end `end` of "dates" time frame must be valid ISO date string. The `end` date cannot be earlier than the `start` date.
+
+####Using more time frames
+
+You can mix any time frames as you like:
 
 ```js
-var msInHour = 60 * 60 * 1000;
 var timeFrames = [
-  {
-    name : 'weekend',
-    unit : 'dayOfWeek',
-    start : 6,  // Saturday
-    length : 2 * 24 * msInHour
+  { name: 'non-working-hours',
+    type: 'daily',
+    start: '17:00',
+    end: '09:00'
   },
-  {
-    name : 'restingHours',
-    unit : 'hour',
-    start : 17,
-    length : 16 * msInHour
-  },
-  {
-    name : 'holiday',
-    unit : 'date',
-    start : 'December 22, 2014 00:00:00',
-    length : 2 * 24 * msInHour
+  { name: 'weekend',
+    type: 'weekly',
+    start: '06.00:00',
+    end: '01.00:00'
   }
 ];
 ```
 
-With these set of objects we create the following time frames:
-- we have a 2 days long frame from December 22, 2014 to December 24, 2014
-- we have a 16 hours long frame per every day from 17 to 9,
-- we have a 2 days long frame per every week from Saturday to Sunday
-
-#####Limitations
-
-- hour type timeframe must be at least 2 hours length
-- hour type timeframes start and end at whole hours
-- length of hour type time frames must be smaller than 24 hours
-- length of time frames must be more than 1 hour
-
-
-#####Using `calculateDueDate()` method
+####Using `calculateDueDate()` method
 
 The `calculateDueDate()` method gives back a **Date() object**. It is a method of `calc` object:
 
 ```js
 var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+```
+
+####Example
+
+```js
+'use strict';
+
+var calc = require('../src/due.date.calculator.js');
+var submitDate = new Date('2014-12-12T16:59:35+01:00');
+var turnaroundTime = 1;
+var timeFrames = [
+  { name: 'non-working-hours',
+    type: 'daily',
+    start: '17:00',
+    end: '09:00'
+  },
+  { name: 'weekend',
+    type: 'weekly',
+    start: '06.00:00',
+    end: '01.00:00'
+  },
+  { name: 'middle time',
+    type: 'monthly',
+    start: '15.00:00',
+    end: '16.00:00'
+  },
+  { name: 'foo',
+    type: 'dates',
+    start: '2014-12-15T13:00+01:00',
+    end: '2014-12-16T17:01+01:00'
+  }
+];
+var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
+console.log(dueDate.toString()); // Wed Dec 17 2014 09:00:35 GMT+0100 (CET)
 ```
 
 ####Prerequisities for development
@@ -90,7 +139,6 @@ When developing, run:
   - `grunt-newer` for running Grunt tasks on newer files only
   - `grunt-contrib-watch`
   - `grunt-mocha-cli` (Mocha testing framework for Grunt)
-  - `grunt-contrib-clean` (cleaning up the boilerplate)
 - Expect.js as an assertion framework
 
 ####EditorConfig
