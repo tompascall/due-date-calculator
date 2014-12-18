@@ -82,7 +82,7 @@ var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
 'use strict';
 
 var calc = require('../src/due.date.calculator.js');
-var submitDate = new Date('2014-12-12T16:59:35+01:00');
+var submitDate = new Date('2014-12-12T16:59:35+01:00'); // Friday
 var turnaroundTime = 1;
 var timeFrames = [
   { name: 'non-working-hours',
