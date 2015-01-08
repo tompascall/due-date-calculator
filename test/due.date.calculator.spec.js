@@ -148,7 +148,7 @@ describe('Calculate due date', function(){
     expect(dueDate.getTime()).to.be(testDate.getTime());
   });
 
-  it('should calculate due date if there are a dates frame', function(){
+  it('should calculate due date if there is a dates frame', function(){
     var turnaroundTime = 1;
     var timeFrames = [
       { name: 'foo',
