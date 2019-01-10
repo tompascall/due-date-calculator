@@ -1,4 +1,4 @@
-###Due Date Calculator
+### Due Date Calculator
 
 This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames)` method for calculating due date, folowing the rules below:
 
@@ -6,7 +6,7 @@ This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames
 - `turnaroundTime` must be given in **minutes**
 - `timeFrames` argument must be an array, that contains time frame objects. For the moment there are 4 types of time frames, `daily`, `weekly`, `monthly`, `dates`, you can distinct them by the `type` property of the frame object.
 
-####Daily time frame object
+#### Daily time frame object
 ```js
 { name: 'non-working-hours', // you can give any name you like
   type: 'daily',
@@ -16,7 +16,7 @@ This project represents `calculateDueDate(submitDate, turnaroundTime, timeFrames
 ```
 If you give a time frame like this, you have this time frame **every day**. It can overflow into the next day, if the `start` time is later than the `end` time, like in the example above.
 
-####Weekly time frame object
+#### Weekly time frame object
 ```js
 { name: 'weekend',
   type: 'weekly',
@@ -27,7 +27,7 @@ If you give a time frame like this, you have this time frame **every day**. It c
 ```
 If you give a time frame like this, you have this time frame **every week**. It can overflow into the next week, if the day of the `start` date is later than the day of the `end` time, like in the example above.
 
-####Monthly time frame object
+#### Monthly time frame object
 ```js
 { name: 'middle time',
   type: 'monthly',
@@ -37,7 +37,7 @@ If you give a time frame like this, you have this time frame **every week**. It 
 ```
 If you give a time frame like this, you have this time frame **every month**. It means that the max. start or the end day of the frame must be 28, because every month has at least 28 days. It can overflow into the next month, if the day of the `start` date is later than the day of the `end` time.
 
-####Dates time frame object
+#### Dates time frame object
 ```js
 { name: 'foo',
   type: 'dates',
@@ -48,7 +48,7 @@ If you give a time frame like this, you have this time frame **every month**. It
 
 The value of `start` end `end` of "dates" time frame must be valid [ISO date string](http://www.w3.org/TR/NOTE-datetime). The `end` date cannot be earlier than the `start` date.
 
-####Using more time frames
+#### Using more time frames
 
 You can mix any time frames as you like:
 
@@ -67,7 +67,7 @@ var timeFrames = [
 ];
 ```
 
-####Using `calculateDueDate()` method
+#### Using `calculateDueDate()` method
 
 The `calculateDueDate()` method gives back a **Date() object**. It is a method of `calc` object:
 
@@ -76,7 +76,7 @@ var calc = require('../src/due.date.calculator.js');
 var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
 ```
 
-####Example
+#### Example
 
 ```js
 'use strict';
@@ -110,16 +110,16 @@ var dueDate = calc.calculateDueDate(submitDate, turnaroundTime, timeFrames);
 console.log(dueDate.toString()); // Wed Dec 17 2014 09:00:35 GMT+0100 (CET)
 ```
 
-####Prerequisities for development
+#### Prerequisities for development
 
 - [Node.js](http://nodejs.org/)
 - [Grunt](http://gruntjs.com/getting-started)
 
-####Installation
+#### Installation
 
 Clone the project, then run `npm install`.
 
-####Grunt tasks
+#### Grunt tasks
 
 We have the following tasks:
 - jshint to lint .js files
@@ -133,7 +133,7 @@ When developing, run:
 
 - `grunt test:all` to lint your code and run the test suite with all the tests, no matter if there's a failing one.
 
-####Used packages
+#### Used packages
 
 - Grunt.js for task automaton
   - `grunt-contrib-jshint` for linting
@@ -142,7 +142,7 @@ When developing, run:
   - `grunt-mocha-cli` (Mocha testing framework for Grunt)
 - Expect.js as an assertion framework
 
-####EditorConfig
+#### EditorConfig
 
 EditorConfig is used to maintain consistent coding styles. There is an `.editorconfig` file in the project root directory, that defines the main styles.
 
